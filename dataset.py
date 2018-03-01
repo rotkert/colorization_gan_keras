@@ -6,7 +6,7 @@ from scipy.misc import imread
 from skimage import color
 from utils import preproc
 
-CIFAR10_PATH = '../../../datasets/cfar10'
+CIFAR10_PATH = 'F:\\magisterka\\datasets\\cifar-10-python\\cifar-10-batches-py'
 IMAGENET_PATH = '../../../datasets/ImageNet'
 
 

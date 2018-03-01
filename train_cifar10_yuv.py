@@ -14,9 +14,9 @@ LAMBDA1 = 1
 LAMBDA2 = 10
 INPUT_SHAPE_GEN = (32, 32, 1)
 INPUT_SHAPE_DIS = (32, 32, 3)
-WEIGHTS_GEN = 'weights_cifar10_yuv_gen.hdf5'
-WEIGHTS_DIS = 'weights_cifar10_yuv_dis.hdf5'
-WEIGHTS_GAN = 'weights_cifar10_yuv_gan.hdf5'
+WEIGHTS_GEN = 'F:\\magisterka\\results\\weights_cifar10_yuv_gen.hdf5'
+WEIGHTS_DIS = 'F:\\magisterka\\results\\weights_cifar10_yuv_dis.hdf5'
+WEIGHTS_GAN = 'F:\\magisterka\\results\\weights_cifar10_yuv_gan.hdf5'
 MODE = 1  # 1: train - 2: visualize
 
 model_gen, model_dis, model_gan = create_models(
@@ -98,6 +98,17 @@ if MODE == 1:
                                 ("G L1", gan_res[2]),
                                 ("pacc", gan_res[5]),
                                 ("acc", gan_res[6])])
+            
+            if (batch_counter % 20 == 0):
+                for i in range(0, 8):
+                    y = data_test_y[i]
+                    uv_pred = np.array(model_gen.predict(y[None, :, :, :]))[0]
+                    yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
+                    save_yuv(yuv_pred, batch_counter, i)
+            if (batch_counter % 50 == 0):
+                model_gen.save_weights(WEIGHTS_GEN, overwrite=True)
+                model_dis.save_weights(WEIGHTS_DIS, overwrite=True)
+                model_gan.save_weights(WEIGHTS_GAN, overwrite=True)
 
         print("")
         print('Epoch %s/%s, Time: %s' % (e + 1, EPOCHS, round(time.time() - start)))

@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import color
+from scipy import misc
 
 
 def preproc(data, normalize=False, flip=False, mean_image=None, outType='YUV'):
@@ -95,3 +96,7 @@ def show_lab(lab_original, lab_pred):
     plt.imshow(rgb_pred)
 
     plt.show()
+    
+def save_yuv(yuv_pred, batch_no, image_no):
+    rgb_pred = np.clip(np.abs(color.yuv2rgb(yuv_pred)), 0, 1)
+    misc.imsave("F:\\magisterka\\results\\image_" + str(batch_no) + "_" + str(image_no) + ".png", rgb_pred)
