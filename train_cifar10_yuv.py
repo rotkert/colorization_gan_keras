@@ -99,12 +99,7 @@ if MODE == 1:
                                 ("pacc", gan_res[5]),
                                 ("acc", gan_res[6])])
             
-            if (batch_counter % 20 == 0):
-                for i in range(0, 8):
-                    y = data_test_y[i]
-                    uv_pred = np.array(model_gen.predict(y[None, :, :, :]))[0]
-                    yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
-                    save_yuv(yuv_pred, batch_counter, i)
+            
             if (batch_counter % 50 == 0):
                 model_gen.save_weights(WEIGHTS_GEN, overwrite=True)
                 model_dis.save_weights(WEIGHTS_DIS, overwrite=True)
