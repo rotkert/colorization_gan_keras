@@ -103,8 +103,7 @@ if MODE == 1:
 
             
             summary = tf.Summary(value=[
-                tf.Summary.Value(tag="Disc loss", simple_value=dis_res[0]),
-                tf.Summary.Value(tag="Disc acc", simple_value=dis_res[1]),
+                tf.Summary.Value(tag="Disc loss", simple_value=dis_res),
                 tf.Summary.Value(tag="Gen total loss", simple_value=gan_res[0]),
                 tf.Summary.Value(tag="Gen loss", simple_value=gan_res[1]),
                 tf.Summary.Value(tag="Gen L1 loss", simple_value=gan_res[2]),
