@@ -1,6 +1,7 @@
 import os
 import time
 import numpy as np
+import tensorflow as tf
 from keras.utils import generic_utils
 from model import create_models
 from dataset import load_cifar10_data, load_cifar10_test_data, load_extra_data
@@ -56,6 +57,7 @@ data_uv = data_yuv[:, :, :, 1:]
 data_test_y = data_test_yuv[:, :, :, :1]
 data_test_uv = data_test_yuv[:, :, :, 1:]
 
+writer = tf.summary.FileWriter("F:\\magisterka\\test")
 
 if MODE == 1:
     print("Start training")
@@ -98,9 +100,19 @@ if MODE == 1:
                                 ("G L1", gan_res[2]),
                                 ("pacc", gan_res[5]),
                                 ("acc", gan_res[6])])
+
             
+            summary = tf.Summary(value=[
+                tf.Summary.Value(tag="Disc loss", simple_value=dis_res[0]),
+                tf.Summary.Value(tag="Disc acc", simple_value=dis_res[1]),
+                tf.Summary.Value(tag="Gen total loss", simple_value=gan_res[0]),
+                tf.Summary.Value(tag="Gen loss", simple_value=gan_res[1]),
+                tf.Summary.Value(tag="Gen L1 loss", simple_value=gan_res[2]),
+                tf.Summary.Value(tag="eacc", simple_value=gan_res[5]),
+                tf.Summary.Value(tag="acc", simple_value=gan_res[6]),])
+            writer.add_summary(summary, batch_counter)
             
-            if (batch_counter % 50 == 0):
+            if (batch_counter % 20 == 0):
                 model_gen.save_weights(WEIGHTS_GEN, overwrite=True)
                 model_dis.save_weights(WEIGHTS_DIS, overwrite=True)
                 model_gan.save_weights(WEIGHTS_GAN, overwrite=True)
