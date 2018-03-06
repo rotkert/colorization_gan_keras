@@ -6,9 +6,10 @@ from keras.utils import generic_utils
 from model import create_models
 from dataset import load_cifar10_data, load_cifar10_test_data, load_extra_data
 from utils import show_yuv
+from utils import init_train
 
+RES_DIR, MODEL, DATASET, COLORSPACE, BATCH_SIZE = init_train()
 EPOCHS = 500
-BATCH_SIZE = 128
 LEARNING_RATE = 0.0001
 MOMENTUM = 0.5
 LAMBDA1 = 1

@@ -1,10 +1,27 @@
 # -*- coding: utf-8 -*-
-
+import os
+import time
+import datetime
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage import color
 from scipy import misc
 
+def init_train():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--run_dir', required = True)
+    parser.add_argument('--model', required = True)
+    parser.add_argument('--dataset', default = 'cifar10')
+    parser.add_argument('--colorspace', default = 'YUV')
+    parser.add_argument('--batch_size', default = 128)
+    results = parser.parse_args()
+    
+    now = datetime.datetime.now()
+    res_dir_name = results.model + "_" + results.dataset + "_" + results.colorspace + "_" + "_bs-" + str(results.batch_size) + "_run-"  + now.strftime("%Y-%m-%d_%H%M")
+    res_dir = os.path.join(results.run_dir, res_dir_name)
+    os.makedirs(res_dir) 
+    return res_dir, results.model, results.dataset, results.colorspace, results.batch_size 
 
 def preproc(data, normalize=False, flip=False, mean_image=None, outType='YUV'):
     data_size = data.shape[0]
