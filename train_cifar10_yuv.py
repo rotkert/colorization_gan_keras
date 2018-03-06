@@ -5,11 +5,9 @@ import tensorflow as tf
 from keras.utils import generic_utils
 from model import create_models
 from dataset import load_cifar10_data, load_cifar10_test_data, load_extra_data
-from utils import show_yuv
-from utils import init_train
-from utils import save_weights
+import utils
 
-RES_DIR, MODEL, DATASET, COLORSPACE, BATCH_SIZE = init_train()
+RES_DIR, MODEL, DATASET, COLORSPACE, BATCH_SIZE = utils.init_train()
 EPOCHS = 500
 LEARNING_RATE = 0.0001
 MOMENTUM = 0.5
@@ -47,10 +45,11 @@ data_uv = data_yuv[:, :, :, 1:]
 data_test_y = data_test_yuv[:, :, :, :1]
 data_test_uv = data_test_yuv[:, :, :, 1:]
 
-writer = tf.summary.FileWriter("F:\\magisterka\\test")
+writer = tf.summary.FileWriter(RES_DIR)
 
 if MODE == 1:
     print("Start training")
+    global_batch_counter = 1
     for e in range(EPOCHS):
         batch_counter = 1
         toggle = True
@@ -82,36 +81,32 @@ if MODE == 1:
             x_output = uv_batch
             gan_res = model_gan.train_on_batch(x_gen, [y_gen, x_output])
             model_dis.trainable = True
-
+            
             progbar.add(BATCH_SIZE,
                         values=[("D loss", dis_res),
                                 ("G total loss", gan_res[0]),
                                 ("G loss", gan_res[1]),
                                 ("G L1", gan_res[2]),
-                                ("pacc", gan_res[5]),
-                                ("acc", gan_res[6])])
+                                ("pacc", gan_res[7]),
+                                ("acc", gan_res[8]),
+                                ("mse", gan_res[9]),
+                                ("mae", gan_res[10])])
 
-            
-            summary = tf.Summary(value=[
-                tf.Summary.Value(tag="Disc loss", simple_value=dis_res),
-                tf.Summary.Value(tag="Gen total loss", simple_value=gan_res[0]),
-                tf.Summary.Value(tag="Gen loss", simple_value=gan_res[1]),
-                tf.Summary.Value(tag="Gen L1 loss", simple_value=gan_res[2]),
-                tf.Summary.Value(tag="eacc", simple_value=gan_res[5]),
-                tf.Summary.Value(tag="acc", simple_value=gan_res[6]),])
-            writer.add_summary(summary, batch_counter)
+            summary = utils.create_summary_batch(dis_res, gan_res)
+            writer.add_summary(summary, global_batch_counter)
+            global_batch_counter += 1
 
         print("")
         print('Epoch %s/%s, Time: %s' % (e + 1, EPOCHS, round(time.time() - start)))
         if e % 10 == 0:
             ev = model_gan.evaluate(data_test_y, [np.ones((data_test_y.shape[0], 1)), data_test_uv])
             ev = np.round(np.array(ev), 4)
-            print('G total loss: %s - G loss: %s - G L1: %s: pacc: %s - acc: %s' % (ev[0], ev[1], ev[2], ev[5], ev[6]))
+            print('G total loss: %s - G loss: %s - G L1: %s: pacc: %s - acc: %s - mse: %s - mae: %s' % (ev[0], ev[1], ev[2], ev[7], ev[8], ev[9], ev[10]))
+            summary = utils.create_summary_epoch(ev)
+            writer.add_summary(summary, e)
+            utils.save_weights(RES_DIR, model_gen, model_dis, model_gan, str(e))
         print('')
-        if e % 2 == 0:
-            save_weights(RES_DIR, model_gen, model_dis, model_gan, str(e))
-
-
+        
 elif MODE == 2:
     for i in range(0, 5000):
         print(i)

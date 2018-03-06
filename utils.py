@@ -4,6 +4,7 @@ import time
 import datetime
 import argparse
 import numpy as np
+import tensorflow as tf
 import matplotlib.pyplot as plt
 from skimage import color
 from scipy import misc
@@ -18,17 +19,40 @@ def init_train():
     results = parser.parse_args()
     
     now = datetime.datetime.now()
-    res_dir_name = results.model + "_" + results.dataset + "_" + results.colorspace + "_" + "_bs-" + str(results.batch_size) + "_run-"  + now.strftime("%Y-%m-%d_%H%M")
+    res_dir_name = results.model + "_" + results.dataset + "_" + results.colorspace + "_bs" + str(results.batch_size) + "_run-"  + now.strftime("%Y-%m-%d_%H%M")
     res_dir = os.path.join(results.run_dir, res_dir_name)
     os.makedirs(res_dir) 
     return res_dir, results.model, results.dataset, results.colorspace, results.batch_size 
 
 def save_weights(res_dir, model_gen, model_dis, model_gan, epoch_str):
-    weights_dir = os.path.join(res_dir, "weiths_epoch_" + epoch_str)
+    weights_dir = os.path.join(res_dir, "weigths_epoch_" + epoch_str)
     os.makedirs(weights_dir)
     model_gen.save_weights(os.path.join(weights_dir, "weights_gen.hdf5"))
     model_dis.save_weights(os.path.join(weights_dir, "weights_dis.hdf5"))
     model_gan.save_weights(os.path.join(weights_dir, "weights_gan.hdf5"))
+   
+def create_summary_epoch(gan_res):
+    summary = tf.Summary(value=[
+                tf.Summary.Value(tag="epoch gen total loss", simple_value=gan_res[0]),
+                tf.Summary.Value(tag="epoch gen loss", simple_value=gan_res[1]),
+                tf.Summary.Value(tag="epoch gen L1 loss", simple_value=gan_res[2]),
+                tf.Summary.Value(tag="epoch eacc", simple_value=gan_res[7]),
+                tf.Summary.Value(tag="epoch acc", simple_value=gan_res[8]),
+                tf.Summary.Value(tag="epoch mse", simple_value=gan_res[9]),
+                tf.Summary.Value(tag="epoch mae", simple_value=gan_res[10]),])
+    return summary
+ 
+def create_summary_batch(dis_res, gan_res):
+    summary = tf.Summary(value=[
+                tf.Summary.Value(tag="batch disc loss", simple_value=dis_res),
+                tf.Summary.Value(tag="batch gen total loss", simple_value=gan_res[0]),
+                tf.Summary.Value(tag="batch gen loss", simple_value=gan_res[1]),
+                tf.Summary.Value(tag="batch gen L1 loss", simple_value=gan_res[2]),
+                tf.Summary.Value(tag="batch eacc", simple_value=gan_res[7]),
+                tf.Summary.Value(tag="batch acc", simple_value=gan_res[8]),
+                tf.Summary.Value(tag="batch mse", simple_value=gan_res[9]),
+                tf.Summary.Value(tag="batch mae", simple_value=gan_res[10]),])
+    return summary
 
 def preproc(data, normalize=False, flip=False, mean_image=None, outType='YUV'):
     data_size = data.shape[0]

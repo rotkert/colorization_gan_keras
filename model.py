@@ -136,7 +136,7 @@ def create_models(input_shape_gen, input_shape_dis, output_channels, lr, momentu
     model_gan = create_model_gan(input_shape=input_shape_gen, generator=model_gen, discriminator=model_dis)
     model_gan.compile(
         loss=[losses.binary_crossentropy, l1],
-        metrics=[eacc, 'accuracy'],
+        metrics=[eacc, 'accuracy', 'mse', 'mae'],
         loss_weights=loss_weights,
         optimizer=optimizer
     )
