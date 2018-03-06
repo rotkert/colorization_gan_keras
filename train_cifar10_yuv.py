@@ -7,6 +7,7 @@ from model import create_models
 from dataset import load_cifar10_data, load_cifar10_test_data, load_extra_data
 from utils import show_yuv
 from utils import init_train
+from utils import save_weights
 
 RES_DIR, MODEL, DATASET, COLORSPACE, BATCH_SIZE = init_train()
 EPOCHS = 500
@@ -16,9 +17,6 @@ LAMBDA1 = 1
 LAMBDA2 = 10
 INPUT_SHAPE_GEN = (32, 32, 1)
 INPUT_SHAPE_DIS = (32, 32, 3)
-WEIGHTS_GEN = 'F:\\magisterka\\results\\weights_cifar10_yuv_gen.hdf5'
-WEIGHTS_DIS = 'F:\\magisterka\\results\\weights_cifar10_yuv_dis.hdf5'
-WEIGHTS_GAN = 'F:\\magisterka\\results\\weights_cifar10_yuv_gan.hdf5'
 MODE = 1  # 1: train - 2: visualize
 
 model_gen, model_dis, model_gan = create_models(
@@ -28,15 +26,6 @@ model_gen, model_dis, model_gan = create_models(
     lr=LEARNING_RATE,
     momentum=MOMENTUM,
     loss_weights=[LAMBDA1, LAMBDA2])
-
-if os.path.exists(WEIGHTS_GEN):
-    model_gen.load_weights(WEIGHTS_GEN)
-
-if os.path.exists(WEIGHTS_DIS):
-    model_dis.load_weights(WEIGHTS_DIS)
-
-if os.path.exists(WEIGHTS_GAN):
-    model_gan.load_weights(WEIGHTS_GAN)
 
 model_gen.summary()
 model_dis.summary()
@@ -111,11 +100,6 @@ if MODE == 1:
                 tf.Summary.Value(tag="eacc", simple_value=gan_res[5]),
                 tf.Summary.Value(tag="acc", simple_value=gan_res[6]),])
             writer.add_summary(summary, batch_counter)
-            
-            if (batch_counter % 20 == 0):
-                model_gen.save_weights(WEIGHTS_GEN, overwrite=True)
-                model_dis.save_weights(WEIGHTS_DIS, overwrite=True)
-                model_gan.save_weights(WEIGHTS_GAN, overwrite=True)
 
         print("")
         print('Epoch %s/%s, Time: %s' % (e + 1, EPOCHS, round(time.time() - start)))
@@ -124,9 +108,8 @@ if MODE == 1:
             ev = np.round(np.array(ev), 4)
             print('G total loss: %s - G loss: %s - G L1: %s: pacc: %s - acc: %s' % (ev[0], ev[1], ev[2], ev[5], ev[6]))
         print('')
-        model_gen.save_weights(WEIGHTS_GEN, overwrite=True)
-        model_dis.save_weights(WEIGHTS_DIS, overwrite=True)
-        model_gan.save_weights(WEIGHTS_GAN, overwrite=True)
+        if e % 2 == 0:
+            save_weights(RES_DIR, model_gen, model_dis, model_gan, str(e))
 
 
 elif MODE == 2:

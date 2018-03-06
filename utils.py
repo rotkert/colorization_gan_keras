@@ -23,6 +23,13 @@ def init_train():
     os.makedirs(res_dir) 
     return res_dir, results.model, results.dataset, results.colorspace, results.batch_size 
 
+def save_weights(res_dir, model_gen, model_dis, model_gan, epoch_str):
+    weights_dir = os.path.join(res_dir, "weiths_epoch_" + epoch_str)
+    os.makedirs(weights_dir)
+    model_gen.save_weights(os.path.join(weights_dir, "weights_gen.hdf5"))
+    model_dis.save_weights(os.path.join(weights_dir, "weights_dis.hdf5"))
+    model_gan.save_weights(os.path.join(weights_dir, "weights_gan.hdf5"))
+
 def preproc(data, normalize=False, flip=False, mean_image=None, outType='YUV'):
     data_size = data.shape[0]
     img_size = int(data.shape[1] / 3)
