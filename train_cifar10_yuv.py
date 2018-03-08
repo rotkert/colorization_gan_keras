@@ -6,6 +6,7 @@ from keras.utils import generic_utils
 from model import create_models
 from dataset import load_cifar10_data, load_cifar10_test_data, load_extra_data
 import utils
+from tensorflow.contrib.summary.summary_ops import graph
 
 RES_DIR, MODEL, DATASET, COLORSPACE, BATCH_SIZE = utils.init_train()
 EPOCHS = 500
@@ -45,6 +46,7 @@ data_test_y = data_test_yuv[:, :, :, :1]
 data_test_uv = data_test_yuv[:, :, :, 1:]
 
 writer = tf.summary.FileWriter(RES_DIR)
+writer.add_graph(K.get_session().graph)
 
 print("Start training")
 global_batch_counter = 1
@@ -89,13 +91,26 @@ for e in range(EPOCHS):
                             ("acc", gan_res[8]),
                             ("mse", gan_res[9]),
                             ("mae", gan_res[10])])
-
+ 
         summary = utils.create_summary_batch(dis_res, gan_res)
         writer.add_summary(summary, global_batch_counter)
         global_batch_counter += 1
-
+    
     print("")
     print('Epoch %s/%s, Time: %s' % (e + 1, EPOCHS, round(time.time() - start)))
+    
+    if e % 5 == 0:
+        image_values = []
+        for i in range (0,100):
+            y = data_test_y[i]
+            uv_pred = np.array(model_gen.predict(y[None, :, :, :]))[0]
+            yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
+            image_value = utils.create_image_summary(yuv_pred, i)
+            image_values.append(image_value)
+        
+        summary = tf.Summary(value = image_values)
+        writer.add_summary(summary, e)
+        
     if e % 10 == 0:
         ev = model_gan.evaluate(data_test_y, [np.ones((data_test_y.shape[0], 1)), data_test_uv])
         ev = np.round(np.array(ev), 4)
