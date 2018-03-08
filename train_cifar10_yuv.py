@@ -117,7 +117,7 @@ for e in range(EPOCHS):
         print('G total loss: %s - G loss: %s - G L1: %s: pacc: %s - acc: %s - mse: %s - mae: %s' % (ev[0], ev[1], ev[2], ev[7], ev[8], ev[9], ev[10]))
         summary = utils.create_summary_epoch(ev)
         writer.add_summary(summary, e)
-        utils.save_weights(RES_DIR, model_gen, model_dis, model_gan, str(e))
+        utils.save_models(RES_DIR, model_gen, model_dis, model_gan, str(e))
     print('')
     
     

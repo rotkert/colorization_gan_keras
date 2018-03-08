@@ -26,12 +26,12 @@ def init_train():
     os.makedirs(res_dir) 
     return res_dir, results.model, results.dataset, results.colorspace, results.batch_size 
 
-def save_weights(res_dir, model_gen, model_dis, model_gan, epoch_str):
+def save_models(res_dir, model_gen, model_dis, model_gan, epoch_str):
     weights_dir = os.path.join(res_dir, "weigths_epoch_" + epoch_str)
     os.makedirs(weights_dir)
-    model_gen.save_weights(os.path.join(weights_dir, "weights_gen.hdf5"))
-    model_dis.save_weights(os.path.join(weights_dir, "weights_dis.hdf5"))
-    model_gan.save_weights(os.path.join(weights_dir, "weights_gan.hdf5"))
+    model_gen.save(os.path.join(weights_dir, "model_gen.h5"))
+    model_dis.save(os.path.join(weights_dir, "model_dis.h5"))
+    model_gan.save(os.path.join(weights_dir, "model_gan.h5"))
    
 def create_summary_epoch(gan_res):
     summary = tf.Summary(value=[
