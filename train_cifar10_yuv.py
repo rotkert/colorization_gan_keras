@@ -2,6 +2,7 @@ import os
 import time
 import numpy as np
 import tensorflow as tf
+import keras.backend as K
 from keras.utils import generic_utils
 from model import create_models
 from dataset import load_cifar10_data, load_cifar10_test_data, load_extra_data
@@ -87,6 +88,7 @@ for e in range(EPOCHS):
                             ("G total loss", gan_res[0]),
                             ("G loss", gan_res[1]),
                             ("G L1", gan_res[2]),
+                            ("dis acc", gan_res[4]),
                             ("pacc", gan_res[7]),
                             ("acc", gan_res[8]),
                             ("mse", gan_res[9]),

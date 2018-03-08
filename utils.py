@@ -17,7 +17,7 @@ def init_train():
     parser.add_argument('--model', required = True)
     parser.add_argument('--dataset', default = 'cifar10')
     parser.add_argument('--colorspace', default = 'YUV')
-    parser.add_argument('--batch_size', default = 128)
+    parser.add_argument('--batch_size', type = int, default = 128)
     results = parser.parse_args()
     
     now = datetime.datetime.now()
@@ -50,10 +50,11 @@ def create_summary_batch(dis_res, gan_res):
                 tf.Summary.Value(tag="batch gen total loss", simple_value=gan_res[0]),
                 tf.Summary.Value(tag="batch gen loss", simple_value=gan_res[1]),
                 tf.Summary.Value(tag="batch gen L1 loss", simple_value=gan_res[2]),
-                tf.Summary.Value(tag="batch eacc", simple_value=gan_res[7]),
-                tf.Summary.Value(tag="batch acc", simple_value=gan_res[8]),
-                tf.Summary.Value(tag="batch mse", simple_value=gan_res[9]),
-                tf.Summary.Value(tag="batch mae", simple_value=gan_res[10]),])
+                tf.Summary.Value(tag="batch disc acc", simple_value=gan_res[2]),
+                tf.Summary.Value(tag="batch gen eacc", simple_value=gan_res[7]),
+                tf.Summary.Value(tag="batch gen acc", simple_value=gan_res[8]),
+                tf.Summary.Value(tag="batch gen mse", simple_value=gan_res[9]),
+                tf.Summary.Value(tag="batch gen mae", simple_value=gan_res[10]),])
     return summary
 
 def create_image_summary(image, image_no):
