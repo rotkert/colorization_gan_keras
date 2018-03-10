@@ -3,9 +3,10 @@ import time
 import numpy as np
 import tensorflow as tf
 import keras.backend as K
+import model_max_pool
+import model_simple
 from keras.utils import generic_utils
-from model import create_models
-from dataset import load_cifar10_data, load_cifar10_test_data, load_extra_data
+from dataset import load_train_data, load_test_data
 import utils
 from tensorflow.contrib.summary.summary_ops import graph
 
@@ -18,24 +19,29 @@ LAMBDA2 = 10
 INPUT_SHAPE_GEN = (32, 32, 1)
 INPUT_SHAPE_DIS = (32, 32, 3)
 
-model_gen, model_dis, model_gan = create_models(
-    input_shape_gen=INPUT_SHAPE_GEN,
-    input_shape_dis=INPUT_SHAPE_DIS,
-    output_channels=2,
-    lr=LEARNING_RATE,
-    momentum=MOMENTUM,
-    loss_weights=[LAMBDA1, LAMBDA2])
+if (MODEL == "model_max_pool") :
+    model_gen, model_dis, model_gan = model_max_pool.create_models(
+        input_shape_gen=INPUT_SHAPE_GEN,
+        input_shape_dis=INPUT_SHAPE_DIS,
+        output_channels=2,
+        lr=LEARNING_RATE,
+        momentum=MOMENTUM,
+        loss_weights=[LAMBDA1, LAMBDA2])
+elif (MODEL == "model_simple"):
+    model_gen, model_dis, model_gan = model_simple.create_models(
+        input_shape_gen=INPUT_SHAPE_GEN,
+        input_shape_dis=INPUT_SHAPE_DIS,
+        output_channels=2,
+        lr=LEARNING_RATE,
+        momentum=MOMENTUM,
+        loss_weights=[LAMBDA1, LAMBDA2])
 
 model_gen.summary()
 model_dis.summary()
 model_gan.summary()
 
-
-data_yuv, data_rgb = load_cifar10_data(outType='YUV')
-data_test_yuv, data_test_rgb = load_cifar10_test_data(outType='YUV')
-#data_extra_yuv, data_extra_rgb = load_extra_data(outType='YUV')
-#data_yuv = np.concatenate((data_extra_yuv, data_yuv), axis=0)
-#data_yuv = np.concatenate((data_yuv, data_test_yuv), axis=0)
+data_yuv, data_rgb = load_train_data(dataset = DATASET, out_type='YUV')
+data_test_yuv, data_test_rgb = load_test_data(dataset = DATASET, out_type='YUV')
 
 data_yuv = data_yuv * 255
 data_test_yuv = data_test_yuv * 255
