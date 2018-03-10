@@ -5,10 +5,11 @@ import numpy as np
 from scipy.misc import imread
 from skimage import color
 from utils import preproc
+from skimage import color
 
 CIFAR10_PATH = 'F:\\magisterka\\datasets\\cifar-10-python\\cifar-10-batches-py'
 CIFAR100_PATH = 'F:\\magisterka\\datasets\\cifar-100-python'
-IMAGENET_PATH = '../../../datasets/ImageNet'
+STL10_PATH = 'F:\\magisterka\\datasets\\stl10_binary'
 
 
 def unpickle(file):
@@ -21,13 +22,16 @@ def load_train_data(dataset, normalize=False, shuffle=False, flip=False, count=-
         return load_cifar10_train_data(out_type = out_type)
     elif dataset == "cifar100":
         return load_cifar100_train_data(out_type = out_type)
+    elif dataset == "stl10":
+        return load_stl10_train_data(out_type = out_type)
     
 def load_test_data(dataset, normalize=False, count=-1, out_type='YUV'):
     if dataset == "cifar10":
         return load_cifar10_test_data(out_type = out_type)
     elif dataset == "cifar100":
         return load_cifar100_test_data(out_type = out_type)
-    
+    elif dataset == "stl10":
+        return load_stl10_test_data(out_type = out_type)
 
 def load_cifar10_train_data(normalize=False, shuffle=False, flip=False, count=-1, out_type='YUV'):
     names = unpickle('{}/batches.meta'.format(CIFAR10_PATH))[b'label_names']
@@ -87,3 +91,21 @@ def load_cifar100_test_data(normalize=False, count=-1, out_type='YUV'):
         data_test = data_test[:count]
 
     return preproc(data_test, normalize=normalize, outType=out_type)
+
+def load_stl10_train_data(normalize=False, count=-1, out_type='YUV'):
+    filename = '{}/train_X.bin'.format(STL10_PATH)
+    with open(filename, 'rb') as f:
+        everything = np.fromfile(f, dtype=np.uint8)
+        images = np.reshape(everything, (-1, 3, 96, 96))
+        images = np.transpose(images, (0, 3, 2, 1))
+        images_yuv = color.rgb2yuv(images)
+        return images_yuv, images
+    
+def load_stl10_test_data(normalize=False, count=-1, out_type='YUV'):
+    filename = '{}/test_X.bin'.format(STL10_PATH)
+    with open(filename, 'rb') as f:
+        everything = np.fromfile(f, dtype=np.uint8)
+        images = np.reshape(everything, (-1, 3, 96, 96))
+        images = np.transpose(images, (0, 3, 2, 1))
+        images_yuv = color.rgb2yuv(images)
+        return images_yuv, images
