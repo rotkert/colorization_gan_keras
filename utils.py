@@ -22,7 +22,10 @@ def init_train():
     results = parser.parse_args()
     
     now = datetime.datetime.now()
-    res_dir_name = results.model + "_" + results.dataset + "_" + results.colorspace + "_bs" + str(results.batch_size) + "_run-"  + now.strftime("%Y-%m-%d_%H%M")
+    res_dir_name = ""
+    if (results.data_limit != -1):
+        res_dir_name += "short" + str(results.data_limit) + "_"
+    res_dir_name += results.model + "_" + results.dataset + "_" + results.colorspace + "_bs" + str(results.batch_size) + "_run-"  + now.strftime("%Y-%m-%d_%H%M")
     res_dir = os.path.join(results.logdir, res_dir_name)
     os.makedirs(res_dir) 
     return res_dir, results.model, results.dataset, results.colorspace, results.batch_size, results.data_limit
