@@ -56,7 +56,7 @@ writer.add_graph(K.get_session().graph)
 
 print("Start training")
 global_batch_counter = 1
-for e in range(EPOCHS):
+for e in range(1, EPOCHS):
     batch_counter = 1
     toggle = True
     batch_total = data_yuv.shape[0] // BATCH_SIZE
