@@ -109,7 +109,7 @@ for e in range(1, EPOCHS):
     if (DATA_LIMIT == -1):
         if e % 5 == 0:
             image_values = []
-            for i in range (0, 100):
+            for i in range (0, 50):
                 y = data_test_y[i]
                 uv_pred = np.array(model_gen.predict(y[None, :, :, :]))[0]
                 yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
