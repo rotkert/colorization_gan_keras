@@ -128,14 +128,15 @@ for e in range(1, EPOCHS):
             utils.save_models(RES_DIR, model_gen, model_dis, model_gan, str(e))
         print('')
     else:
-        image_values = []
-        for i in range (0, 20):
-            y = data_y[i]
-            uv_pred = np.array(model_gen.predict(y[None, :, :, :]))[0]
-            yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
-            image_value = utils.create_image_summary(yuv_pred, i)
-            image_values.append(image_value)
+        if e % 5 == 0:
+            image_values = []
+            for i in range (0, 100):
+                y = data_y[i]
+                uv_pred = np.array(model_gen.predict(y[None, :, :, :]))[0]
+                yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
+                image_value = utils.create_image_summary(yuv_pred, i)
+                image_values.append(image_value)
         
-        summary = tf.Summary(value = image_values)
-        writer.add_summary(summary, e)
-    
+            summary = tf.Summary(value = image_values)
+            writer.add_summary(summary, e)
+        
