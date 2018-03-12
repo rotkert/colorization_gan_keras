@@ -82,7 +82,7 @@ def create_model_gen(input_shape, output_channels):
     merge9 = concatenate([conv1, up9], axis=3)
     conv9 = create_conv(64, (3, 3), merge9, 'conv9_1', activation='relu')
     conv9 = create_conv(64, (3, 3), conv9, 'conv9_2', activation='relu')
-    conv9 = Conv2D(output_channels, (1, 1), padding='same', name='conv9_3')(conv9)
+    conv9 = Conv2D(output_channels, (1, 1), padding='same', name='conv9_3', activation = 'tanh')(conv9)
 
     model = Model(inputs=inputs, outputs=conv9, name='generator')
 

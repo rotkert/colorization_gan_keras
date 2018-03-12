@@ -9,7 +9,7 @@ CIFAR10_PATH = '..\\dataset\\cifar-10-batches-py'
 CIFAR100_PATH = '..\\dataset\\cifar-100-python'
 STL10_PATH = '..\\dataset\\stl10_binary'
 
-def load_train_data(dataset, data_limit, colorspace, normalize = False):
+def load_train_data(dataset, data_limit, colorspace):
     if dataset == "cifar10":
         data = load_cifar10_train_data()
         data = preproc_cifar(data)
@@ -20,11 +20,11 @@ def load_train_data(dataset, data_limit, colorspace, normalize = False):
         data = load_stl10_train_data()
     
     data = limit_data(data, data_limit)
-    data_pred, data_cond = convert_colorspace(data, colorspace)
-    data_pred, data_cond, mean_data_pred, mean_data_cond = normalize_images(data_pred, data_cond, normalize)
-    return data_pred, data_cond, mean_data_pred, mean_data_cond
+    data = convert_colorspace(data, colorspace)
+    data, mean = normalize_images(data)
+    return data, mean
     
-def load_test_data(dataset, data_limit, colorspace, normalize=False):
+def load_test_data(dataset, data_limit, colorspace, mean):
     if dataset == "cifar10":
         data = load_cifar10_test_data()
         data = preproc_cifar(data)
@@ -35,9 +35,9 @@ def load_test_data(dataset, data_limit, colorspace, normalize=False):
         data = load_stl10_test_data()
     
     data = limit_data(data, data_limit)
-    data_pred, data_cond = convert_colorspace(data, colorspace)
-    data_pred, data_cond, _, _ = normalize_images(data_pred, data_cond, normalize)
-    return data_pred, data_cond
+    data = convert_colorspace(data, colorspace)
+    data, _ = normalize_images(data, mean)
+    return data
 
 def load_cifar10_train_data():
     names = unpickle('{}/batches.meta'.format(CIFAR10_PATH))[b'label_names']
@@ -110,18 +110,19 @@ def limit_data(data, data_limit):
 def convert_colorspace(data, colorspace):
     if colorspace == 'YUV':
         data_yuv = color.rgb2yuv(data)
-        return data_yuv, data
+        return data_yuv
     
     elif colorspace == 'LAB':
         data_lab = color.rgb2lab(data_RGB)
         data_gray = color.rgb2gray(data_RGB)[:, :, :, None]
         return data_lab, data_gray
     
-def normalize_images(data_pred, data_cond, normalize, mean_data_pred = None, mean_data_cond = None):
-    if normalize:
-        if mean_image is None:
-            mean_image = np.mean(data)
-    
-        mean_image = mean_image / np.float32(255)
-        data = (data - mean_image) / np.float32(255)
-    return data_pred, data_cond, mean_data_pred, mean_data_cond
+def normalize_images(data, mean = None):
+    if mean is None:
+        mean = np.mean(data, axis=tuple(range(data.ndim-1)))
+   
+    data[:, :, :, 0] -= mean[0]
+    data[:, :, :, 1] -= mean[1]
+    data[:, :, :, 2] -= mean[2]
+
+    return data, mean

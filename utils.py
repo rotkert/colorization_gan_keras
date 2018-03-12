@@ -58,7 +58,11 @@ def create_summary_batch(dis_res, gan_res):
                 tf.Summary.Value(tag="batch gen mae", simple_value=gan_res[10]),])
     return summary
 
-def create_image_summary(image, image_no):
+def create_image_summary(image, mean, image_no):
+    image[:, :, 0] += mean[0]
+    image[:, :, 1] += mean[1]
+    image[:, :, 2] += mean[2]
+    image *= 255
     image_rgb_conv = np.clip(np.abs(color.yuv2rgb(image)), 0, 255).astype(np.uint8)
     image_bytes = Image.fromarray(image_rgb_conv, 'RGB')
     image_byte_array = io.BytesIO()
