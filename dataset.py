@@ -4,40 +4,42 @@ import pickle
 import numpy as np
 from scipy.misc import imread
 from skimage import color
-from utils import preproc
 
-CIFAR10_PATH = 'F:\\magisterka\\datasets\\cifar-10-python\\cifar-10-batches-py'
-IMAGENET_PATH = '../../../datasets/ImageNet'
+CIFAR10_PATH = '..\\dataset\\cifar-10-batches-py'
+CIFAR100_PATH = '..\\dataset\\cifar-100-python'
+STL10_PATH = '..\\dataset\\stl10_binary'
 
+def load_train_data(dataset, data_limit, colorspace, normalize = False):
+    if dataset == "cifar10":
+        data = load_cifar10_train_data()
+        data = preproc_cifar(data)
+    elif dataset == "cifar100":
+        data = load_cifar100_train_data()
+        data = preproc_cifar(data)
+    elif dataset == "stl10":
+        data = load_stl10_train_data()
+    
+    data = limit_data(data, data_limit)
+    data_pred, data_cond = convert_colorspace(data, colorspace)
+    data_pred, data_cond, mean_data_pred, mean_data_cond = normalize_images(data_pred, data_cond, normalize)
+    return data_pred, data_cond, mean_data_pred, mean_data_cond
+    
+def load_test_data(dataset, data_limit, colorspace, normalize=False):
+    if dataset == "cifar10":
+        data = load_cifar10_test_data()
+        data = preproc_cifar(data)
+    elif dataset == "cifar100":
+        data = load_cifar100_test_data()
+        data = preproc_cifar(data)
+    elif dataset == "stl10":
+        data = load_stl10_test_data()
+    
+    data = limit_data(data, data_limit)
+    data_pred, data_cond = convert_colorspace(data, colorspace)
+    data_pred, data_cond, _, _ = normalize_images(data_pred, data_cond, normalize)
+    return data_pred, data_cond
 
-def unpickle(file):
-    with open(file, 'rb') as fo:
-        dict = pickle.load(fo, encoding='bytes')
-    return dict
-
-
-def read_cifar10_data(directory):
-    names = unpickle('{}/batches.meta'.format(directory))[b'label_names']
-    data, labels = [], []
-    for i in range(1, 6):
-        filename = '{}/data_batch_{}'.format(directory, i)
-        batch_data = unpickle(filename)
-        if len(data) > 0:
-            data = np.vstack((data, batch_data[b'data']))
-            labels = np.hstack((labels, batch_data[b'labels']))
-        else:
-            data = batch_data[b'data']
-            labels = batch_data[b'labels']
-
-    filename = '{}/test_batch'.format(directory)
-    batch_data = unpickle(filename)
-    data_test = batch_data[b'data']
-    labels_test = batch_data[b'labels']
-
-    return names, data, labels, data_test, labels_test
-
-
-def load_cifar10_data(normalize=False, shuffle=False, flip=False, count=-1, outType='YUV'):
+def load_cifar10_train_data():
     names = unpickle('{}/batches.meta'.format(CIFAR10_PATH))[b'label_names']
     data, labels = [], []
     for i in range(1, 6):
@@ -49,118 +51,77 @@ def load_cifar10_data(normalize=False, shuffle=False, flip=False, count=-1, outT
         else:
             data = batch_data[b'data']
             labels = batch_data[b'labels']
+    return data
 
-    if shuffle:
-        np.random.shuffle(data)
-
-    if count != -1:
-        data = data[:count]
-
-    return preproc(data, normalize=normalize, flip=flip, outType=outType)
-
-
-def load_cifar10_test_data(normalize=False, count=-1, outType='YUV'):
+def load_cifar10_test_data():
     filename = '{}/test_batch'.format(CIFAR10_PATH)
     batch_data = unpickle(filename)
     data_test = batch_data[b'data']
     labels_test = batch_data[b'labels']
+    return data_test
 
-    if count != -1:
-        data_test = data_test[:count]
+def load_cifar100_train_data():
+    data, labels = [], []
+    filename = '{}/train'.format(CIFAR100_PATH)
+    batch_data = unpickle(filename)
+    data = batch_data[b'data']
+    labels = batch_data[b'fine_labels']
+    return data
 
-    return preproc(data_test, normalize=normalize, outType=outType)
+def load_cifar100_test_data():
+    filename = '{}/test'.format(CIFAR100_PATH)
+    batch_data = unpickle(filename)
+    data_test = batch_data[b'data']
+    labels_test = batch_data[b'fine_labels']
+    return data_test
 
+def load_stl10_train_data():
+    filename = '{}/train_X.bin'.format(STL10_PATH)
+    with open(filename, 'rb') as f:
+        everything = np.fromfile(f, dtype=np.uint8)
+        images = np.reshape(everything, (-1, 3, 96, 96))
+        images = np.transpose(images, (0, 3, 2, 1))
+        return images
+    
+def load_stl10_test_data():
+    filename = '{}/test_X.bin'.format(STL10_PATH)
+    with open(filename, 'rb') as f:
+        everything = np.fromfile(f, dtype=np.uint8)
+        images = np.reshape(everything, (-1, 3, 96, 96))
+        images = np.transpose(images, (0, 3, 2, 1))
+        return images
+    
+def unpickle(file):
+    with open(file, 'rb') as fo:
+        dict = pickle.load(fo, encoding='bytes')
+    return dict
 
-def load_extra_data(outType='YUV'):
-    names = np.array(glob.glob('extra/*.jpg'))
-    files = np.array([imread(f) for f in names])
+def preproc_cifar(data):
+    data_size = data.shape[0]
+    img_size = int(data.shape[1] / 3)
+    data = np.dstack((data[:, :img_size], data[:, img_size:2 * img_size], data[:, 2 * img_size:]))
+    return data.reshape((data_size, int(np.sqrt(img_size)), int(np.sqrt(img_size)), 3))
 
-    if outType == 'YUV':
-        return color.rgb2yuv(files), files
-
-    elif outType == 'LAB':
-        return color.rgb2lab(files), color.rgb2gray(files)[:, :, :, None]
-
-
-def load_imagenet_data(idx, normalize=False, flip=False, count=-1, outType='YUV'):
-    data_file = IMAGENET_PATH + '/train_data_batch_'
-    d = unpickle(data_file + str(idx))
-    x = d['data']
-    mean_image = d['mean']
-
-    if count != -1:
-        x = x[:count]
-
-    return preproc(x, normalize=normalize, flip=flip, mean_image=mean_image, outType=outType)
-
-
-def load_imagenet_test_data(normalize=False, count=-1, outType='YUV'):
-    d = unpickle(IMAGENET_PATH + '/val_data')
-    x = d['data']
-
-    if count != -1:
-        x = x[:count]
-
-    return preproc(x, normalize=normalize, outType=outType)
-
-
-def imagenet_data_generator(batch_size, normalize=False, flip=False, scale=1, outType='YUV'):
-    while True:
-        for idx in range(1, 11):
-            data_file = IMAGENET_PATH + '/train_data_batch_'
-            d = unpickle(data_file + str(idx))
-            x = d['data']
-            mean_image = d['mean']
-            count = 0
-            while count <= x.shape[0] - batch_size:
-                data = x[count:count + batch_size]
-                count = count + batch_size
-
-                if outType == 'YUV':
-                    data_yuv, data_rgb = preproc(data, normalize=normalize, flip=flip, mean_image=mean_image)
-                    yield data_yuv[:, :, :, :1], data_yuv[:, :, :, 1:] * scale
-
-                elif outType == 'LAB':
-                    lab, grey = preproc(data, normalize=normalize, flip=flip, mean_image=mean_image, outType=outType)
-                    yield lab, grey
-
-
-def imagenet_test_data_generator(batch_size, normalize=False, scale=1, count=-1, outType='YUV'):
-    d = unpickle(IMAGENET_PATH + '/val_data')
-    x = d['data']
-
-    if count != -1:
-        x = x[:count]
-
-    while True:
-        count = 0
-        while count <= x.shape[0] - batch_size:
-            data = x[count:count + batch_size]
-            count = count + batch_size
-
-            if outType == 'YUV':
-                data_yuv, data_rgb = preproc(data, normalize=normalize, outType=outType)
-                yield data_yuv[:, :, :, :1], data_yuv[:, :, :, 1:] * scale
-
-            elif outType == 'LAB':
-                lab, grey = preproc(data, normalize=normalize, outType=outType)
-                yield lab, grey
-
-
-def dir_data_generator(dir, batch_size, data_range=(0, 0), outType='YUV'):
-    names = np.array(glob.glob(dir + '/*.jpg'))
-
-    if data_range != (0, 0):
-        names = names[data_range[0]:data_range[1]]
-
-    batch_count = len(names) // batch_size
-
-    while True:
-        for i in range(0, batch_count):
-            files = np.array([imread(f) for f in names[i * batch_size:i * batch_size + batch_size]])
-
-            if outType == 'YUV':
-                yield color.rgb2yuv(files), files
-
-            elif outType == 'LAB':
-                yield color.rgb2lab(files), color.rgb2gray(files)[:, :, :, None]
+def limit_data(data, data_limit):
+    if data_limit != -1:
+        data = data[:data_limit]
+    return data
+        
+def convert_colorspace(data, colorspace):
+    if colorspace == 'YUV':
+        data_yuv = color.rgb2yuv(data)
+        return data_yuv, data
+    
+    elif colorspace == 'LAB':
+        data_lab = color.rgb2lab(data_RGB)
+        data_gray = color.rgb2gray(data_RGB)[:, :, :, None]
+        return data_lab, data_gray
+    
+def normalize_images(data_pred, data_cond, normalize, mean_data_pred = None, mean_data_cond = None):
+    if normalize:
+        if mean_image is None:
+            mean_image = np.mean(data)
+    
+        mean_image = mean_image / np.float32(255)
+        data = (data - mean_image) / np.float32(255)
+    return data_pred, data_cond, mean_data_pred, mean_data_cond
