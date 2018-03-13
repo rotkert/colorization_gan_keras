@@ -144,5 +144,5 @@ for e in range(1, EPOCHS):
           
             summary = tf.Summary(value = image_values)
             writer.add_summary(summary, e)
-        if e % 300:
+        if e % 300 == 0:
             utils.save_models(RES_DIR, model_gen, model_dis, model_gan, str(e))
