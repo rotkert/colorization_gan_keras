@@ -25,10 +25,13 @@ data_uv = data_yuv[:, :, :, 1:]
  
 data_test_y = data_test_yuv[:, :, :, :1]
 data_test_uv = data_test_yuv[:, :, :, 1:]
- 
+
+data_y_noise = utils.add_noise(data_y)
+data_test_y_noise = utils.add_noise(data_test_y)
+
 if (MODEL == "model_max_pool") :
     model_gen, model_dis, model_gan = model_max_pool.create_models(
-        input_shape_gen = (data_yuv.shape[1], data_yuv.shape[2], 1),
+        input_shape_gen = (data_yuv.shape[1], data_yuv.shape[2], 4),
         input_shape_dis = (data_yuv.shape[1], data_yuv.shape[2], 3),
         output_channels=2,
         lr=LEARNING_RATE,
@@ -60,31 +63,34 @@ for e in range(1, EPOCHS):
     progbar = generic_utils.Progbar(batch_total * BATCH_SIZE)
     start = time.time()
     dis_res = 0
-     
+      
     while batch_counter < batch_total:
         uv_batch = data_uv[(batch_counter - 1) * BATCH_SIZE:batch_counter * BATCH_SIZE]
         y_batch = data_y[(batch_counter - 1) * BATCH_SIZE:batch_counter * BATCH_SIZE]
-     
+        y_batch_noise = data_y_noise[(batch_counter - 1) * BATCH_SIZE:batch_counter * BATCH_SIZE]
+      
         batch_counter += 1
-     
+      
         toggle = not toggle
         if toggle:
-            x_dis = np.concatenate((model_gen.predict(y_batch), y_batch), axis=3)
+            x_dis = np.concatenate((model_gen.predict(y_batch_noise), y_batch), axis=3)
             y_dis = np.zeros((BATCH_SIZE, 1))
+            y_dis = np.random.uniform(low=0.0, high=0.2, size=BATCH_SIZE)
         else:
             x_dis = np.concatenate((uv_batch, y_batch), axis=3)
             y_dis = np.ones((BATCH_SIZE, 1))
-            y_dis = np.random.uniform(low=0.9, high=1, size=BATCH_SIZE)
-     
+            y_dis = np.random.uniform(low=0.8, high=1.1, size=BATCH_SIZE)
+      
         dis_res = model_dis.train_on_batch(x_dis, y_dis)
-     
+      
         model_dis.trainable128 = False
-        x_gen = y_batch
+        x_gen = y_batch_noise
         y_gen = np.ones((BATCH_SIZE, 1))
+        y_gen = np.random.uniform(low=0.8, high=1.1, size=BATCH_SIZE)
         x_output = uv_batch
         gan_res = model_gan.train_on_batch(x_gen, [y_gen, x_output])
         model_dis.trainable = True
-             
+              
         progbar.add(BATCH_SIZE,
                     values=[("D loss", dis_res),
                             ("G total loss", gan_res[0]),
@@ -108,7 +114,8 @@ for e in range(1, EPOCHS):
             image_values = []
             for i in range (0, 50):
                 y = data_test_y[i]
-                uv_pred = np.array(model_gen.predict(y[None, :, :, :]))[0]
+                y_noise = data_test_y_noise[i]
+                uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
                 yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
                 image_value = utils.create_image_summary(yuv_pred, i)
                 image_values.append(image_value)
@@ -129,11 +136,12 @@ for e in range(1, EPOCHS):
             image_values = []
             for i in range (0, 50):
                 y = data_y[i]
-                uv_pred = np.array(model_gen.predict(y[None, :, :, :]))[0]
+                y_noise = data_y_noise[i]
+                uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
                 yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
                 image_value = utils.create_image_summary(yuv_pred, mean, i)
                 image_values.append(image_value)
-         
+          
             summary = tf.Summary(value = image_values)
             writer.add_summary(summary, e)
-         
+          

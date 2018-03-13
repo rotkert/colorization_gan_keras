@@ -13,7 +13,9 @@ from keras.layers import Conv2D
 from keras.layers import Dense
 from keras.layers import Dropout
 from keras.layers import Flatten
+from keras.layers import Lambda
 from keras.layers import concatenate
+from keras.layers.pooling import AveragePooling2D
 
 
 def eacc(y_true, y_pred):
@@ -46,19 +48,19 @@ def create_model_gen(input_shape, output_channels):
     inputs = Input(input_shape)
     conv1 = create_conv(64, (3, 3), inputs, 'conv1_1', activation='leakyrelu')
     conv1 = create_conv(64, (3, 3), conv1, 'conv1_2', activation='leakyrelu')
-    pool1 = MaxPool2D((2, 2))(conv1)
+    pool1 = AveragePooling2D((2, 2))(conv1)
 
     conv2 = create_conv(128, (3, 3), pool1, 'conv2_1', activation='leakyrelu')
     conv2 = create_conv(128, (3, 3), conv2, 'conv2_2', activation='leakyrelu')
-    pool2 = MaxPool2D((2, 2))(conv2)
+    pool2 = AveragePooling2D((2, 2))(conv2)
 
     conv3 = create_conv(256, (3, 3), pool2, 'conv3_1', activation='leakyrelu')
     conv3 = create_conv(256, (3, 3), conv3, 'conv3_2', activation='leakyrelu')
-    pool3 = MaxPool2D((2, 2))(conv3)
+    pool3 = AveragePooling2D((2, 2))(conv3)
 
     conv4 = create_conv(512, (3, 3), pool3, 'conv4_1', activation='leakyrelu')
     conv4 = create_conv(512, (3, 3), conv4, 'conv4_2', activation='leakyrelu')
-    pool4 = MaxPool2D((2, 2))(conv4)
+    pool4 = AveragePooling2D((2, 2))(conv4)
 
     conv5 = create_conv(1024, (3, 3), pool4, 'conv5_1', activation='leakyrelu')
     conv5 = create_conv(1024, (3, 3), conv5, 'conv5_2', activation='leakyrelu')
@@ -112,12 +114,17 @@ def create_model_dis(input_shape):
 
     return model
 
+def crop():
+        def func(x):
+            return x[:, :, :, 0:1]
+        return  Lambda(func)
 
 def create_model_gan(input_shape, generator, discriminator):
     input = Input(input_shape)
-
     gen_out = generator(input)
-    dis_out = discriminator(concatenate([gen_out, input], axis=3))
+    
+    input_dis = crop()(input)
+    dis_out = discriminator(concatenate([gen_out, input_dis], axis=3))
 
     model = Model(inputs=[input], outputs=[dis_out, gen_out], name='dcgan')
 

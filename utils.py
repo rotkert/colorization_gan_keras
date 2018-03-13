@@ -27,6 +27,14 @@ def init_train():
     os.makedirs(res_dir) 
     return res_dir, results.model, results.dataset, results.colorspace, results.batch_size, results.data_limit
 
+def add_noise(images):
+    images_noise = []
+    for image in images: 
+        noise = np.random.normal(size=(32, 32, 3))
+        image_noise = np.concatenate((image, noise), axis = 2)
+        images_noise.append(image_noise)
+    return np.array(images_noise)
+
 def save_models(res_dir, model_gen, model_dis, model_gan, epoch_str):
     weights_dir = os.path.join(res_dir, "weigths_epoch_" + epoch_str)
     os.makedirs(weights_dir)
