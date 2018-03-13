@@ -12,10 +12,10 @@ from tensorflow.contrib.summary.summary_ops import graph
 
 RES_DIR, MODEL, DATASET, COLORSPACE, BATCH_SIZE, DATA_LIMIT = utils.init_train()
 EPOCHS = 500
-LEARNING_RATE = 0.0001
+LEARNING_RATE = 0.001
 MOMENTUM = 0.5
 LAMBDA1 = 1
-LAMBDA2 = 10
+LAMBDA2 = 0
 
 data_yuv, mean = load_train_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE)
 data_test_yuv = load_test_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE, mean = mean)
