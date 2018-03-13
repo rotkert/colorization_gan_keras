@@ -132,7 +132,7 @@ for e in range(1, EPOCHS):
             utils.save_models(RES_DIR, model_gen, model_dis, model_gan, str(e))
         print('')
     else:
-        if e % 5 == 0:
+        if e % 50 == 0:
             image_values = []
             for i in range (0, 50):
                 y = data_y[i]
@@ -144,4 +144,5 @@ for e in range(1, EPOCHS):
           
             summary = tf.Summary(value = image_values)
             writer.add_summary(summary, e)
-          
+        if e % 300:
+            utils.save_models(RES_DIR, model_gen, model_dis, model_gan, str(e))
