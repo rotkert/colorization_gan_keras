@@ -6,6 +6,7 @@ import keras.backend as K
 import utils
 import model_max_pool
 import model_simple
+import model_transp
 from keras.utils import generic_utils
 from dataset import load_train_data, load_test_data
 from tensorflow.contrib.summary.summary_ops import graph
@@ -40,6 +41,14 @@ if (MODEL == "model_max_pool") :
 elif (MODEL == "model_simple"):
     model_gen, model_dis, model_gan = model_simple.create_models(
         input_shape_gen = (data_yuv.shape[1], data_yuv.shape[2], 1),
+        input_shape_dis = (data_yuv.shape[1], data_yuv.shape[2], 3),
+        output_channels=2,
+        lr=LEARNING_RATE,
+        momentum=MOMENTUM,
+        loss_weights=[LAMBDA1, LAMBDA2])
+elif (MODEL == "model_transp"):
+    model_gen, model_dis, model_gan = model_transp.create_models(
+        input_shape_gen = (data_yuv.shape[1], data_yuv.shape[2], 4),
         input_shape_dis = (data_yuv.shape[1], data_yuv.shape[2], 3),
         output_channels=2,
         lr=LEARNING_RATE,
