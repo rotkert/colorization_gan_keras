@@ -124,14 +124,14 @@ for e in range(1, EPOCHS):
                 y_noise = data_test_y_noise[i]
                 uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
                 yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
-                image_value = utils.create_image_summary(yuv_pred, i)
+                image_value = utils.create_image_summary(yuv_pred, mean, i)
                 image_values.append(image_value)
              
             summary = tf.Summary(value = image_values)
             writer.add_summary(summary, e)
              
-        if e % 10 == 0:
-            ev = model_gan.evaluate(data_test_y, [np.ones((data_test_y.shape[0], 1)), data_test_uv])
+        if e % 5 == 0:
+            ev = model_gan.evaluate(data_test_y_noise, [np.ones((data_test_y_noise.shape[0], 1)), data_test_uv])
             ev = np.round(np.array(ev), 4)
             print('G total loss: %s - G loss: %s - G L1: %s: pacc: %s - acc: %s - mse: %s - mae: %s' % (ev[0], ev[1], ev[2], ev[7], ev[8], ev[9], ev[10]))
             summary = utils.create_summary_epoch(ev)
