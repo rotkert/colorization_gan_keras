@@ -30,7 +30,7 @@ def init_train():
 def add_noise(images):
     images_noise = []
     for image in images: 
-        noise = np.random.normal(size=(96, 96, 3))
+        noise = np.random.normal(size=(32, 32, 3))
         image_noise = np.concatenate((image, noise), axis = 2)
         images_noise.append(image_noise)
     return np.array(images_noise)
