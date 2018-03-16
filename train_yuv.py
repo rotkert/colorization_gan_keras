@@ -12,11 +12,11 @@ from dataset import load_train_data, load_test_data
 from tensorflow.contrib.summary.summary_ops import graph
 
 RES_DIR, MODEL, DATASET, COLORSPACE, BATCH_SIZE, DATA_LIMIT = utils.init_train()
-EPOCHS = 500
-LEARNING_RATE = 0.001
+EPOCHS = 5000
+LEARNING_RATE = 0.0001
 MOMENTUM = 0.5
 LAMBDA1 = 1
-LAMBDA2 = 0
+LAMBDA2 = 100
 
 data_yuv, mean = load_train_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE)
 data_test_yuv = load_test_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE, mean = mean)
@@ -26,9 +26,6 @@ data_uv = data_yuv[:, :, :, 1:]
  
 data_test_y = data_test_yuv[:, :, :, :1]
 data_test_uv = data_test_yuv[:, :, :, 1:]
-
-data_y_noise = utils.add_noise(data_y)
-data_test_y_noise = utils.add_noise(data_test_y)
 
 if (MODEL == "model_max_pool") :
     model_gen, model_dis, model_gan = model_max_pool.create_models(
@@ -72,7 +69,8 @@ for e in range(1, EPOCHS):
     progbar = generic_utils.Progbar(batch_total * BATCH_SIZE)
     start = time.time()
     dis_res = 0
-      
+    data_y_noise = utils.add_noise(data_y)
+    data_test_y_noise = utils.add_noise(data_test_y)
     while batch_counter < batch_total:
         uv_batch = data_uv[(batch_counter - 1) * BATCH_SIZE:batch_counter * BATCH_SIZE]
         y_batch = data_y[(batch_counter - 1) * BATCH_SIZE:batch_counter * BATCH_SIZE]
@@ -141,7 +139,7 @@ for e in range(1, EPOCHS):
             utils.save_models(RES_DIR, model_gen, model_dis, model_gan, str(e))
         print('')
     else:
-        if e % 50 == 0:
+        if e % 10 == 0:
             image_values = []
             for i in range (0, 50):
                 y = data_y[i]
