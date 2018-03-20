@@ -26,7 +26,7 @@ def load_train_data(dataset, data_limit, colorspace):
     
     if data_limit != -1:
         data_valid = convert_colorspace(data_valid, colorspace)
-        data_valid = normalize_images(data_valid, mean)
+        data_valid, _ = normalize_images(data_valid, mean)
     
     return data, data_valid, mean
     
