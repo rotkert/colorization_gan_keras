@@ -169,7 +169,7 @@ for e in range(1, EPOCHS):
                 y_noise = data_valid_y_noise[i]
                 uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
                 yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
-                valid_image_value = utils.create_image_summary(yuv_pred, mean, i)
+                valid_image_value = utils.create_image_summary(yuv_pred, mean, i, "_valid")
                 valid_image_values.append(valid_image_value)
           
             summary = tf.Summary(value = valid_image_values)

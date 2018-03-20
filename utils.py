@@ -66,7 +66,7 @@ def create_summary_batch(dis_res, gan_res):
                 tf.Summary.Value(tag="batch gen mae", simple_value=gan_res[10]),])
     return summary
 
-def create_image_summary(image, mean, image_no):
+def create_image_summary(image, mean, image_no, text = ""):
     image[:, :, 0] += mean[0]
     image[:, :, 1] += mean[1]
     image[:, :, 2] += mean[2]
@@ -77,4 +77,4 @@ def create_image_summary(image, mean, image_no):
     image_bytes.save(image_byte_array, format='PNG')
     image_byte_array = image_byte_array.getvalue()
     image_summary = tf.Summary.Image(encoded_image_string = image_byte_array, height = image.shape[0], width = image.shape[1])
-    return tf.Summary.Value(tag='%s/%d' % ("image", image_no), image = image_summary)
+    return tf.Summary.Value(tag='%s/%d' % ("image" + text, image_no), image = image_summary)
