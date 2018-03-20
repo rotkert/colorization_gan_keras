@@ -18,7 +18,7 @@ MOMENTUM = 0.5
 LAMBDA1 = 1
 LAMBDA2 = 100
 
-data_yuv, mean = load_train_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE)
+data_yuv, data_valid_yuv,  mean = load_train_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE)
 data_test_yuv = load_test_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE, mean = mean)
 
 data_y = data_yuv[:, :, :, :1]
@@ -139,6 +139,17 @@ for e in range(1, EPOCHS):
             utils.save_models(RES_DIR, model_gen, model_dis, model_gan, str(e))
         print('')
     else:
+        data_valid_y = data_valid_yuv[:, :, :, :1]
+        data_valid_y_noise = utils.add_noise(data_valid_y)
+        data_valid_uv = data_valid_yuv[:, :, :, 1:]
+        
+        if e % 5 == 0:
+            ev = model_gan.evaluate(data_valid_y_noise, [np.ones((data_valid_y_noise.shape[0], 1)), data_valid_uv])
+            ev = np.round(np.array(ev), 4)
+            print('G total loss: %s - G loss: %s - G L1: %s: pacc: %s - acc: %s - mse: %s - mae: %s' % (ev[0], ev[1], ev[2], ev[7], ev[8], ev[9], ev[10]))
+            summary = utils.create_summary_epoch(ev)
+            writer.add_summary(summary, e)
+        
         if e % 10 == 0:
             image_values = []
             for i in range (0, 50):
@@ -151,5 +162,18 @@ for e in range(1, EPOCHS):
           
             summary = tf.Summary(value = image_values)
             writer.add_summary(summary, e)
+            
+            valid_image_values = []
+            for i in range (0, 50):
+                y = data_valid_y[i]
+                y_noise = data_valid_y_noise[i]
+                uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
+                yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
+                valid_image_value = utils.create_image_summary(yuv_pred, mean, i)
+                valid_image_values.append(valid_image_value)
+          
+            summary = tf.Summary(value = valid_image_values)
+            writer.add_summary(summary, e)
+            
         if e % 25 == 0:
             utils.save_models(RES_DIR, model_gen, model_dis, model_gan, str(e))

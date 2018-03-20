@@ -19,10 +19,13 @@ def load_train_data(dataset, data_limit, colorspace):
     elif dataset == "stl10":
         data = load_stl10_train_data()
     
-    data = limit_data(data, data_limit)
+    data, data_valid = limit_data(data, data_limit)
+    
     data = convert_colorspace(data, colorspace)
+    data_valid = convert_colorspace(data_valid, colorspace)
+    
     data, mean = normalize_images(data)
-    return data, mean
+    return data, data_valid, mean
     
 def load_test_data(dataset, data_limit, colorspace, mean):
     if dataset == "cifar10":
@@ -34,7 +37,7 @@ def load_test_data(dataset, data_limit, colorspace, mean):
     elif dataset == "stl10":
         data = load_stl10_test_data()
     
-    data = limit_data(data, data_limit)
+    data, _ = limit_data(data, data_limit)
     data = convert_colorspace(data, colorspace)
     data, _ = normalize_images(data, mean)
     return data
@@ -103,9 +106,11 @@ def preproc_cifar(data):
     return data.reshape((data_size, int(np.sqrt(img_size)), int(np.sqrt(img_size)), 3))
 
 def limit_data(data, data_limit):
+    data_valid = data
     if data_limit != -1:
+        data_valid = data[data.shape[0] - 100 : data.shape[0]]
         data = data[:data_limit]
-    return data
+    return data, data_valid
         
 def convert_colorspace(data, colorspace):
     if colorspace == 'YUV':
