@@ -11,7 +11,7 @@ STL10_PATH = '..\\dataset\\stl10_binary'
 
 def load_train_data(dataset, data_limit, colorspace):
     if dataset == "cifar10":
-        data = load_cifar10_train_data()
+        data, _ = load_cifar10_train_data()
         data = preproc_cifar(data)
     elif dataset == "cifar100":
         data = load_cifar100_train_data()
@@ -19,20 +19,31 @@ def load_train_data(dataset, data_limit, colorspace):
     elif dataset == "stl10":
         data = load_stl10_train_data()
     
-    data, data_valid = limit_data(data, data_limit)
-    
+    data = limit_data(data, data_limit)
     data = convert_colorspace(data, colorspace)
     data, mean = normalize_images(data)
     
-    if data_limit != -1:
-        data_valid = convert_colorspace(data_valid, colorspace)
-        data_valid, _ = normalize_images(data_valid, mean)
-    
-    return data, data_valid, mean
-    
-def load_test_data(dataset, data_limit, colorspace, mean):
+    return data, mean
+
+def load_valid_data(dataset, colorspace, mean):
     if dataset == "cifar10":
-        data = load_cifar10_test_data()
+        data, labels = load_cifar10_train_data()
+        data = preproc_cifar(data)
+    elif dataset == "cifar100":
+        data = load_cifar100_train_data()
+        data = preproc_cifar(data)
+    elif dataset == "stl10":
+        data = load_stl10_train_data()
+        
+    data = data[data.shape[0] - 100 : data.shape[0]]
+    labels = labels[labels.shape[0] - 100 : labels.shape[0]]
+    data = convert_colorspace(data, colorspace)
+    data, _ = normalize_images(data, mean)
+    return data, labels
+    
+def load_test_data(dataset, colorspace, mean):
+    if dataset == "cifar10":
+        data, labels = load_cifar10_test_data()
         data = preproc_cifar(data)
     elif dataset == "cifar100":
         data = load_cifar100_test_data()
@@ -40,10 +51,9 @@ def load_test_data(dataset, data_limit, colorspace, mean):
     elif dataset == "stl10":
         data = load_stl10_test_data()
     
-    data, _ = limit_data(data, data_limit)
     data = convert_colorspace(data, colorspace)
     data, _ = normalize_images(data, mean)
-    return data
+    return data, labels
 
 def load_cifar10_train_data():
     names = unpickle('{}/batches.meta'.format(CIFAR10_PATH))[b'label_names']
@@ -57,14 +67,14 @@ def load_cifar10_train_data():
         else:
             data = batch_data[b'data']
             labels = batch_data[b'labels']
-    return data
+    return data, labels
 
 def load_cifar10_test_data():
     filename = '{}/test_batch'.format(CIFAR10_PATH)
     batch_data = unpickle(filename)
     data_test = batch_data[b'data']
     labels_test = batch_data[b'labels']
-    return data_test
+    return data_test, labels_test
 
 def load_cifar100_train_data():
     data, labels = [], []
@@ -109,11 +119,9 @@ def preproc_cifar(data):
     return data.reshape((data_size, int(np.sqrt(img_size)), int(np.sqrt(img_size)), 3))
 
 def limit_data(data, data_limit):
-    data_valid = data
     if data_limit != -1:
-        data_valid = data[data.shape[0] - 100 : data.shape[0]]
         data = data[:data_limit]
-    return data, data_valid
+    return data
         
 def convert_colorspace(data, colorspace):
     if colorspace == 'YUV':

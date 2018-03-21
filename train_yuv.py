@@ -18,8 +18,9 @@ MOMENTUM = 0.5
 LAMBDA1 = 1
 LAMBDA2 = 100
 
-data_yuv, data_valid_yuv,  mean = load_train_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE)
-data_test_yuv = load_test_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE, mean = mean)
+data_yuv,  mean = load_train_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE)
+data_valid_yuv, _ = load_valid_data(dataset = DATASET, colorspace = COLORSPACE, mean = mean)
+data_test_yuv, _ = load_test_data(dataset = DATASET, colorspace = COLORSPACE, mean = mean)
 
 data_y = data_yuv[:, :, :, :1]
 data_uv = data_yuv[:, :, :, 1:]
