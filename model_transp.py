@@ -22,11 +22,6 @@ from keras.layers.convolutional import Conv2DTranspose
 def eacc(y_true, y_pred):
     return K.mean(K.equal(K.round(y_true), K.round(y_pred)))
 
-
-def l1(y_true, y_pred):
-    return K.mean(K.abs(y_pred - y_true))
-
-
 def create_conv(filters, kernel_size, inputs, name=None, bn=True, dropout=0., strides = 1, padding='same', activation='relu'):
     conv = Conv2D(filters, kernel_size, strides = strides, padding=padding, kernel_initializer='he_normal', name=name)(inputs)
 
@@ -136,7 +131,7 @@ def create_models(input_shape_gen, input_shape_dis, output_channels, lr, momentu
 
     model_gan = create_model_gan(input_shape=input_shape_gen, generator=model_gen, discriminator=model_dis)
     model_gan.compile(
-        loss=[losses.binary_crossentropy, l1],
+        loss=[losses.binary_crossentropy, losses.mean_absolute_error],
         metrics=[eacc, 'accuracy', 'mse', 'mae'],
         loss_weights=loss_weights,
         optimizer=optimizer

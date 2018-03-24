@@ -7,44 +7,42 @@ from keras.models import load_model
 from skimage import color
 from colorfulness import test
 
-def normalize_production(x):
-    mean = 120.707
-    std = 64.15
-    return (x-mean)/(std+1e-7)
+class evaluator:
+    def __init__(self):
+        self.model = load_model("vgg16_cifar10.h5")
 
-model = load_model("vgg16_cifar10.h5")
+    def normalize_production(self, x):
+        mean = 120.707
+        std = 64.15
+        return (x-mean)/(std+1e-7)
 
-_, mean = dataset.load_train_data(dataset = "cifar10", data_limit = 1000, colorspace = "YUV")
-data, labels = dataset.load_valid_data(dataset = "cifar10", colorspace = "YUV", mean = mean)
-data_y = data[:, :, :, :1]
-data_y_noise = utils.add_noise(data_y)
-
-model_gen = load_model("F:\\OneDrive - Politechnika Warszawska\\mgr-wyniki\\full_dataset\\C1_ganl1_model_transp_cifar10_YUV_bs128_run-2018-03-16_1522\\model_gen.h5")
-model_gen.load_weights("C:\\Users\\Miko\\Desktop\\test\\weigths_epoch_425\\weights_gen.h5")
- 
-predicted_images = []
-for i in range(data.shape[0]):
-    y = data_y[i]
-    y_noise = data_y_noise[i]
-    uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
-    yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
-    yuv_pred[:, :, 0] += mean[0]
-    yuv_pred[:, :, 1] += mean[1]
-    yuv_pred[:, :, 2] += mean[2]
-    predicted_images.append(yuv_pred)
-
-data = np.array(predicted_images)
-data = color.yuv2rgb(data)
-data *= 255
-
-print(test(data))
-
-data = normalize_production(data)
-
-y = keras.utils.to_categorical(labels, 10)
-
-print(model.model.metrics_names)
-ev = model.model.evaluate(data, y)
-ev = np.round(np.array(ev), 4)
-print(ev[0])
-print(ev[1])
+    def evaluate(self, images, labels):
+        images = self.normalize_production(images)
+        y = keras.utils.to_categorical(labels, 10)
+        ev = self.model.evaluate(images, y)
+        ev = np.round(np.array(ev), 4)
+        return ev[1]
+        
+def calculate_image_colorfullness(image):
+    r = image[:, :, 0]
+    g = image[:, :, 1]
+    b = image[:, :, 2]
+    
+    rg = np.absolute(r - g)
+    yb = np.absolute(0.5 * (r + g) - b)
+    
+    (rbMean, rbStd) = (np.mean(rg), np.std(rg))
+    (ybMean, ybStd) = (np.mean(yb), np.std(yb))
+    
+    stdRoot = np.sqrt((rbStd ** 2) + (ybStd ** 2))
+    meanRoot = np.sqrt((rbMean ** 2) + (ybMean ** 2))
+    
+    return stdRoot + (0.3 * meanRoot)
+    
+def calculate_colorfulness(images):
+    all = []
+    for i in range (images.shape[0]):
+        colorfulness = calculate_image_colorfullness(images[i])
+        all.append(colorfulness)
+    
+    return np.mean(np.array(all))

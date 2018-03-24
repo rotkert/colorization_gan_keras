@@ -25,7 +25,7 @@ def load_train_data(dataset, data_limit, colorspace):
     
     return data, mean
 
-def load_valid_data(dataset, colorspace, mean):
+def load_valid_data(dataset, colorspace, mean, size):
     if dataset == "cifar10":
         data, labels = load_cifar10_train_data()
         data = preproc_cifar(data)
@@ -35,8 +35,8 @@ def load_valid_data(dataset, colorspace, mean):
     elif dataset == "stl10":
         data = load_stl10_train_data()
         
-    data = data[data.shape[0] - 100 : data.shape[0]]
-    labels = labels[labels.shape[0] - 100 : labels.shape[0]]
+    data = data[data.shape[0] - size : data.shape[0]]
+    labels = labels[labels.shape[0] - size : labels.shape[0]]
     data = convert_colorspace(data, colorspace)
     data, _ = normalize_images(data, mean)
     return data, labels

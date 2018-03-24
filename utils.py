@@ -62,16 +62,24 @@ def create_summary_epoch(gan_res):
     return summary
  
 def create_summary_batch(dis_res, gan_res):
+    dis_sum = (dis_res + gan_res[1]) / 2
     summary = tf.Summary(value=[
                 tf.Summary.Value(tag="batch disc loss", simple_value=dis_res),
                 tf.Summary.Value(tag="batch gen total loss", simple_value=gan_res[0]),
                 tf.Summary.Value(tag="batch gen loss", simple_value=gan_res[1]),
                 tf.Summary.Value(tag="batch gen L1 loss", simple_value=gan_res[2]),
+                tf.Summary.Value(tag="batch disc loss sum", simple_value=dis_sum),
                 tf.Summary.Value(tag="batch disc acc", simple_value=gan_res[4]),
                 tf.Summary.Value(tag="batch gen eacc", simple_value=gan_res[7]),
                 tf.Summary.Value(tag="batch gen acc", simple_value=gan_res[8]),
                 tf.Summary.Value(tag="batch gen mse", simple_value=gan_res[9]),
                 tf.Summary.Value(tag="batch gen mae", simple_value=gan_res[10]),])
+    return summary
+
+def create_summary_evaluation(class_acc, colorfulness):
+    summary = tf.Summary(value = [
+                tf.Summary.Value(tag = "epoch classification accuracy", simple_value = class_acc),
+                tf.Summary.Value(tag = "epoch colorfulness", simple_value = colorfulness),])
     return summary
 
 def create_image_summary(image, image_no, text = ""):

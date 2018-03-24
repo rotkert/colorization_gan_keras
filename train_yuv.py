@@ -10,6 +10,8 @@ import model_transp
 from keras.utils import generic_utils
 from dataset import load_train_data, load_test_data, load_valid_data
 from tensorflow.contrib.summary.summary_ops import graph
+from utils_evaluation import evaluator
+from utils_evaluation import calculate_colorfulness
 
 RES_DIR, MODEL, DATASET, COLORSPACE, BATCH_SIZE, DATA_LIMIT = utils.init_train()
 EPOCHS = 5000
@@ -19,7 +21,7 @@ LAMBDA1 = 1
 LAMBDA2 = 100
 
 data_yuv,  mean = load_train_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE)
-data_valid_yuv, _ = load_valid_data(dataset = DATASET, colorspace = COLORSPACE, mean = mean)
+data_valid_yuv, lables_valid = load_valid_data(dataset = DATASET, colorspace = COLORSPACE, mean = mean, size = 100)
 data_test_yuv, _ = load_test_data(dataset = DATASET, colorspace = COLORSPACE, mean = mean)
 
 data_y = data_yuv[:, :, :, :1]
@@ -56,19 +58,18 @@ elif (MODEL == "model_transp"):
 model_gen.summary()
 model_dis.summary()
 model_gan.summary()
- 
+evaluator = evaluator()
  
 writer = tf.summary.FileWriter(RES_DIR)
 writer.add_graph(K.get_session().graph)
  
-print("Start training")
 global_batch_counter = 1
 for e in range(1, EPOCHS):
     batch_counter = 1
     toggle = True
     batch_total = data_yuv.shape[0] // BATCH_SIZE
     progbar = generic_utils.Progbar(batch_total * BATCH_SIZE)
-    start = time.time()
+
     dis_res = 0
     data_y_noise = utils.add_noise(data_y)
     data_test_y_noise = utils.add_noise(data_test_y)
@@ -141,7 +142,7 @@ for e in range(1, EPOCHS):
             ev = np.round(np.array(ev), 4)
             summary = utils.create_summary_epoch(ev)
             writer.add_summary(summary, e)
-        
+         
         if e % 1 == 0:
             image_values = []
             for i in range (0, 50):
@@ -153,7 +154,7 @@ for e in range(1, EPOCHS):
                 image_values.append(image_value)
             summary = tf.Summary(value = image_values)
             writer.add_summary(summary, e)
-            
+             
             valid_image_values = []
             for i in range (0, 50):
                 y = data_valid_y[i]
@@ -173,7 +174,10 @@ for e in range(1, EPOCHS):
                 uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
                 rgb_pred = utils.process_after_predicted(uv_pred, y, mean)
                 rgb_pred_values.append(rgb_pred)
-                
-            
+            rgb_pred_values = np.array(rgb_pred_values)
+            class_acc = evaluator.evaluate(rgb_pred_values, lables_valid)    
+            colorfulness = calculate_colorfulness(rgb_pred_values)
+            summary = utils.create_summary_evaluation(class_acc, colorfulness)
+            writer.add_summary(summary, e)
             utils.save_weights(RES_DIR, model_gen, model_dis, model_gan, str(e))
             

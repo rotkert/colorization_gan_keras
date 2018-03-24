@@ -3,17 +3,12 @@ import matplotlib.pyplot as plt
 from skimage import color
 from scipy import misc
 
-def show_yuv(yuv_original, yuv_pred, mean):
-    yuv_pred[:, :, 0] += mean[0]
-    yuv_pred[:, :, 1] += mean[1]
-    yuv_pred[:, :, 2] += mean[2]
-    
+def show_yuv(yuv_original, rgb_pred, mean):
     yuv_original[:, :, 0] += mean[0]
     yuv_original[:, :, 1] += mean[1]
     yuv_original[:, :, 2] += mean[2]
     
     rgb_original = np.clip(color.yuv2rgb(yuv_original), 0, 1)
-    rgb_pred = np.clip(np.abs(color.yuv2rgb(yuv_pred)), 0, 1)
     grey = color.rgb2grey(yuv_original)
 
     fig = plt.figure()
