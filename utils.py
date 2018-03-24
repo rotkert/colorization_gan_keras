@@ -35,8 +35,16 @@ def add_noise(images):
         images_noise.append(image_noise)
     return np.array(images_noise)
 
-def save_models(res_dir, model_gen, model_dis, model_gan, epoch_str):
-    weights_dir = os.path.join(res_dir, "weigths_epoch_" + epoch_str)
+def process_after_predicted(uv_pred, y, mean):
+    yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
+    yuv_pred[:, :, 0] += mean[0]
+    yuv_pred[:, :, 1] += mean[1]
+    yuv_pred[:, :, 2] += mean[2]
+    yuv_pred *= 255
+    return np.clip(np.abs(color.yuv2rgb(yuv_pred)), 0, 255).astype(np.uint8)
+
+def save_weights(res_dir, model_gen, model_dis, model_gan, epoch_str):
+    weights_dir = os.path.join(res_dir, "weights_epoch_" + epoch_str)
     os.makedirs(weights_dir)
     model_gen.save_weights(os.path.join(weights_dir, "weights_gen.h5"))
     model_dis.save_weights(os.path.join(weights_dir, "weights_dis.h5"))
@@ -66,13 +74,8 @@ def create_summary_batch(dis_res, gan_res):
                 tf.Summary.Value(tag="batch gen mae", simple_value=gan_res[10]),])
     return summary
 
-def create_image_summary(image, mean, image_no, text = ""):
-    image[:, :, 0] += mean[0]
-    image[:, :, 1] += mean[1]
-    image[:, :, 2] += mean[2]
-    image *= 255
-    image_rgb_conv = np.clip(np.abs(color.yuv2rgb(image)), 0, 255).astype(np.uint8)
-    image_bytes = Image.fromarray(image_rgb_conv, 'RGB')
+def create_image_summary(image, image_no, text = ""):
+    image_bytes = Image.fromarray(image, 'RGB')
     image_byte_array = io.BytesIO()
     image_bytes.save(image_byte_array, format='PNG')
     image_byte_array = image_byte_array.getvalue()

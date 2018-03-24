@@ -11,6 +11,7 @@ from keras.layers import UpSampling2D
 from keras.layers import LeakyReLU
 from keras.layers import Conv2D
 from keras.layers import Dense
+from keras.layers import Lambda
 from keras.layers import Dropout
 from keras.layers import Flatten
 from keras.layers import concatenate
@@ -60,13 +61,21 @@ def create_model_dis(input_shape):
 
     return Model(inputs=inputs, outputs=dense6, name='discriminator')
 
+def crop():
+        def func(x):
+            return x[:, :, :, 0:1]
+        return  Lambda(func)
+
 def create_model_gan(input_shape, generator, discriminator):
     input = Input(input_shape)
-
     gen_out = generator(input)
-    dis_out = discriminator(concatenate([gen_out, input], axis=3))
+    
+    input_dis = crop()(input)
+    dis_out = discriminator(concatenate([gen_out, input_dis], axis=3))
 
-    return Model(inputs=[input], outputs=[dis_out, gen_out], name='dcgan')
+    model = Model(inputs=[input], outputs=[dis_out, gen_out], name='dcgan')
+
+    return model
 
 def create_models(input_shape_gen, input_shape_dis, output_channels, lr, momentum, loss_weights):
     optimizer = Adam(lr=lr, beta_1=momentum)
