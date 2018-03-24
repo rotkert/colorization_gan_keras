@@ -5,7 +5,7 @@ import utils
 import tensorflow as tf
 from keras.models import load_model
 from skimage import color
-import time
+from colorfulness import test
 
 def normalize_production(x):
     mean = 120.707
@@ -34,12 +34,12 @@ for i in range(data.shape[0]):
     predicted_images.append(yuv_pred)
 
 data = np.array(predicted_images)
-print(data[0,0,0, :])
 data = color.yuv2rgb(data)
 data *= 255
-print(data[0,0,0, :])
+
+print(test(data))
+
 data = normalize_production(data)
-print(data[0,0,0, :])
 
 y = keras.utils.to_categorical(labels, 10)
 
@@ -48,8 +48,3 @@ ev = model.model.evaluate(data, y)
 ev = np.round(np.array(ev), 4)
 print(ev[0])
 print(ev[1])
-writer = tf.summary.FileWriter("C:\\Users\\Miko\\Desktop\\test")
-writer = tf.summary.FileWriter(logdir, graph, max_queue, flush_secs, graph_def, filename_suffix)
-summary = tf.Summary(value=[tf.Summary.Value(tag="aaaa", simple_value=ev[1]),])
-writer.add_summary(summary, 425)
-time.sleep(10)
