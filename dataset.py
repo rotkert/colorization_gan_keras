@@ -5,7 +5,7 @@ import numpy as np
 from scipy.misc import imread
 from skimage import color
 
-CIFAR10_PATH = '../dataset/cifar-10-batches-py'
+CIFAR10_PATH = '..\\dataset\\cifar-10-batches-py'
 CIFAR100_PATH = '..\\dataset\\cifar-100-python'
 STL10_PATH = '..\\dataset\\stl10_binary'
 
@@ -14,10 +14,10 @@ def load_train_data(dataset, data_limit, colorspace):
         data, _ = load_cifar10_train_data()
         data = preproc_cifar(data)
     elif dataset == "cifar100":
-        data = load_cifar100_train_data()
+        data, _ = load_cifar100_train_data()
         data = preproc_cifar(data)
     elif dataset == "stl10":
-        data = load_stl10_train_data()
+        data, _ = load_stl10_train_data()
     
     data = limit_data(data, data_limit)
     data = convert_colorspace(data, colorspace)
@@ -30,10 +30,10 @@ def load_valid_data(dataset, colorspace, mean, size):
         data, labels = load_cifar10_train_data()
         data = preproc_cifar(data)
     elif dataset == "cifar100":
-        data = load_cifar100_train_data()
+        data, labels = load_cifar100_train_data()
         data = preproc_cifar(data)
     elif dataset == "stl10":
-        data = load_stl10_train_data()
+        data, labels = load_stl10_train_data()
         
     data = data[data.shape[0] - size : data.shape[0]]
     labels = labels[labels.shape[0] - size : labels.shape[0]]
@@ -82,7 +82,7 @@ def load_cifar100_train_data():
     batch_data = unpickle(filename)
     data = batch_data[b'data']
     labels = batch_data[b'fine_labels']
-    return data
+    return data, labels
 
 def load_cifar100_test_data():
     filename = '{}/test'.format(CIFAR100_PATH)
@@ -93,12 +93,15 @@ def load_cifar100_test_data():
 
 def load_stl10_train_data():
     filename = '{}/train_X.bin'.format(STL10_PATH)
+    filenme_labels = '{}/train_y.bin'.format(STL10_PATH)
     with open(filename, 'rb') as f:
         everything = np.fromfile(f, dtype=np.uint8)
         images = np.reshape(everything, (-1, 3, 96, 96))
         images = np.transpose(images, (0, 3, 2, 1))
-        return images
-    
+    with open(filenme_labels, 'rb') as f:
+        labels = np.fromfile(f, dtype=np.uint8)
+    return images, labels
+
 def load_stl10_test_data():
     filename = '{}/test_X.bin'.format(STL10_PATH)
     with open(filename, 'rb') as f:
