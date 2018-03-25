@@ -1,8 +1,7 @@
 import numpy as np
 import utils
 import model_transp
-from dataset import load_train_data, load_test_data
-from utils_visualisation import show_yuv
+from dataset import load_train_data, load_test_data, load_valid_data
 from keras.models import load_model
 from utils_evaluation import evaluator
 from utils_evaluation import calculate_colorfulness
@@ -23,6 +22,7 @@ data_test_y_noise = utils.add_noise(data_test_y)
 
 data_valid_y = data_valid_yuv[:, :, :, :1]
 data_valid_y_noise = utils.add_noise(data_valid_y)
+data_valid_uv = data_valid_yuv[:, :, :, 1:]
 
 model_gen, model_dis, model_gan = model_transp.create_models(
         input_shape_gen = (32, 32, 4),
@@ -32,7 +32,8 @@ model_gen, model_dis, model_gan = model_transp.create_models(
         momentum=MOMENTUM,
         loss_weights=[LAMBDA1, LAMBDA2])
 
-model_gen.load_weights("C:\\Users\\Miko\\Desktop\\test\\weigths_epoch_275\\weights_gen.h5")
+model_gen.load_weights("/home/mkamins3/results/short1000_model_transp_cifar10_YUV_bs128_run-2018-03-20_1640/weigths_epoch_900/weights_gen.h5")
+evaluator = evaluator()
      
 rgb_pred_values = []
 for i in range (data_valid_yuv.shape[0]):
