@@ -4,8 +4,6 @@ import dataset
 import utils
 import tensorflow as tf
 from keras.models import load_model
-from skimage import color
-from colorfulness import test
 
 class evaluator:
     def __init__(self):
