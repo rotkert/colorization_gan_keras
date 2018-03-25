@@ -35,14 +35,14 @@ model_gen, model_dis, model_gan = model_transp.create_models(
 model_gen.load_weights("C:\\Users\\Miko\\Desktop\\test\\weigths_epoch_275\\weights_gen.h5")
      
 rgb_pred_values = []
-    for i in range (data_valid_yuv.shape[0]):
-        y = data_valid_y[i]
-        y_noise = data_valid_y_noise[i]
-        uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
-        rgb_pred = utils.process_after_predicted(uv_pred, y, mean)
-        rgb_pred_values.append(rgb_pred)
-    rgb_pred_values = np.array(rgb_pred_values)
-    class_acc = evaluator.evaluate(rgb_pred_values, lables_valid)    
-    colorfulness = calculate_colorfulness(rgb_pred_values)
-    print(class_acc)
-    print(colorfulness)
+for i in range (data_valid_yuv.shape[0]):
+    y = data_valid_y[i]
+    y_noise = data_valid_y_noise[i]
+    uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
+    rgb_pred = utils.process_after_predicted(uv_pred, y, mean)
+    rgb_pred_values.append(rgb_pred)
+rgb_pred_values = np.array(rgb_pred_values)
+class_acc = evaluator.evaluate(rgb_pred_values, lables_valid)    
+colorfulness = calculate_colorfulness(rgb_pred_values)
+print(class_acc)
+print(colorfulness)
