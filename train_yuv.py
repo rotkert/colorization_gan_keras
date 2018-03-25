@@ -15,13 +15,13 @@ from utils_evaluation import calculate_colorfulness
 
 RES_DIR, MODEL, DATASET, COLORSPACE, BATCH_SIZE, DATA_LIMIT = utils.init_train()
 EPOCHS = 5000
-LEARNING_RATE = 0.0001
+LEARNING_RATE = 0.0005
 MOMENTUM = 0.5
 LAMBDA1 = 1
-LAMBDA2 = 100
+LAMBDA2 = 0
 
 data_yuv,  mean = load_train_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE)
-data_valid_yuv, lables_valid = load_valid_data(dataset = DATASET, colorspace = COLORSPACE, mean = mean, size = 100)
+data_valid_yuv, lables_valid = load_valid_data(dataset = DATASET, colorspace = COLORSPACE, mean = mean, size = 500)
 data_test_yuv, _ = load_test_data(dataset = DATASET, colorspace = COLORSPACE, mean = mean)
 
 data_y = data_yuv[:, :, :, :1]
@@ -137,13 +137,13 @@ for e in range(1, EPOCHS):
         data_valid_y_noise = utils.add_noise(data_valid_y)
         data_valid_uv = data_valid_yuv[:, :, :, 1:]
         
-        if e % 1 == 0:
+        if e % 10 == 0:
             ev = model_gan.evaluate(data_valid_y_noise, [np.ones((data_valid_y_noise.shape[0], 1)), data_valid_uv])
             ev = np.round(np.array(ev), 4)
             summary = utils.create_summary_epoch(ev)
             writer.add_summary(summary, e)
          
-        if e % 1 == 0:
+        if e % 10 == 0:
             image_values = []
             for i in range (0, 50):
                 y = data_y[i]
@@ -166,7 +166,7 @@ for e in range(1, EPOCHS):
             summary = tf.Summary(value = valid_image_values)
             writer.add_summary(summary, e)
             
-        if e % 1 == 0:
+        if e % 10 == 0:
             rgb_pred_values = []
             for i in range (data_valid_yuv.shape[0]):
                 y = data_valid_y[i]
