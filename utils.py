@@ -5,6 +5,10 @@ import datetime
 import argparse
 import numpy as np
 import tensorflow as tf
+import model_max_pool
+import model_simple
+import model_transp
+import model_no_down
 from skimage import color
 from PIL import Image
 
@@ -26,6 +30,43 @@ def init_train():
     res_dir = os.path.join(results.logdir, res_dir_name)
     os.makedirs(res_dir) 
     return res_dir, results.model, results.dataset, results.colorspace, results.batch_size, results.data_limit
+
+def create_models(MODEL, size, LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2):
+    if (MODEL == "model_max_pool") :
+        model_gen, model_dis, model_gan = model_max_pool.create_models(
+        input_shape_gen = (size, size, 4),
+        input_shape_dis = (size, size, 3),
+        output_channels=2,
+        lr=LEARNING_RATE,
+        momentum=MOMENTUM,
+        loss_weights=[LAMBDA1, LAMBDA2])
+    elif (MODEL == "model_simple"):
+        model_gen, model_dis, model_gan = model_simple.create_models(
+            input_shape_gen = (size, size, 4),
+            input_shape_dis = (size, size, 3),
+            output_channels=2,
+            lr=LEARNING_RATE,
+            momentum=MOMENTUM,
+            loss_weights=[LAMBDA1, LAMBDA2])
+    elif (MODEL == "model_transp"):
+        model_gen, model_dis, model_gan = model_transp.create_models(
+            input_shape_gen = (size, size, 4),
+            input_shape_dis = (size, size, 3),
+            output_channels=2,
+            lr=LEARNING_RATE,
+            momentum=MOMENTUM,
+            loss_weights=[LAMBDA1, LAMBDA2])
+    elif (MODEL == "model_no_down"):
+        model_gen, model_dis, model_gan = model_no_down.create_models(
+            input_shape_gen = (size, size, 4),
+            input_shape_dis = (size, size, 3),
+            output_channels=2,
+            lr=LEARNING_RATE,
+            momentum=MOMENTUM,
+            loss_weights=[LAMBDA1, LAMBDA2])
+    return model_gen, model_dis, model_gan
+    
+
 
 def add_noise(images):
     images_noise = []

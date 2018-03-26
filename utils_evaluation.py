@@ -7,7 +7,7 @@ from keras.models import load_model
 
 class evaluator:
     def __init__(self):
-        self.model = load_model("/home/mkamins3/models/vgg16_cifar10.h5")
+        self.model = load_model("F:\\OneDrive - Politechnika Warszawska\\mgr-wyniki\\models\\vgg16_cifar10.h5")
 
     def normalize_production(self, x):
         mean = 120.707

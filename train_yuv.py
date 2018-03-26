@@ -4,10 +4,6 @@ import numpy as np
 import tensorflow as tf
 import keras.backend as K
 import utils
-import model_max_pool
-import model_simple
-import model_transp
-import model_no_down
 from keras.utils import generic_utils
 from dataset import load_train_data, load_test_data, load_valid_data
 from tensorflow.contrib.summary.summary_ops import graph
@@ -31,38 +27,7 @@ data_uv = data_yuv[:, :, :, 1:]
 data_test_y = data_test_yuv[:, :, :, :1]
 data_test_uv = data_test_yuv[:, :, :, 1:]
 
-if (MODEL == "model_max_pool") :
-    model_gen, model_dis, model_gan = model_max_pool.create_models(
-        input_shape_gen = (data_yuv.shape[1], data_yuv.shape[2], 4),
-        input_shape_dis = (data_yuv.shape[1], data_yuv.shape[2], 3),
-        output_channels=2,
-        lr=LEARNING_RATE,
-        momentum=MOMENTUM,
-        loss_weights=[LAMBDA1, LAMBDA2])
-elif (MODEL == "model_simple"):
-    model_gen, model_dis, model_gan = model_simple.create_models(
-        input_shape_gen = (data_yuv.shape[1], data_yuv.shape[2], 4),
-        input_shape_dis = (data_yuv.shape[1], data_yuv.shape[2], 3),
-        output_channels=2,
-        lr=LEARNING_RATE,
-        momentum=MOMENTUM,
-        loss_weights=[LAMBDA1, LAMBDA2])
-elif (MODEL == "model_transp"):
-    model_gen, model_dis, model_gan = model_transp.create_models(
-        input_shape_gen = (data_yuv.shape[1], data_yuv.shape[2], 4),
-        input_shape_dis = (data_yuv.shape[1], data_yuv.shape[2], 3),
-        output_channels=2,
-        lr=LEARNING_RATE,
-        momentum=MOMENTUM,
-        loss_weights=[LAMBDA1, LAMBDA2])
-elif (MODEL == "model_no_down"):
-    model_gen, model_dis, model_gan = model_no_down.create_models(
-        input_shape_gen = (data_yuv.shape[1], data_yuv.shape[2], 4),
-        input_shape_dis = (data_yuv.shape[1], data_yuv.shape[2], 3),
-        output_channels=2,
-        lr=LEARNING_RATE,
-        momentum=MOMENTUM,
-        loss_weights=[LAMBDA1, LAMBDA2])
+model_gen, model_dis, model_gan = utils.create_models(MODEL, data_yuv.shape[1], LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2)
  
 model_gen.summary()
 model_dis.summary()
