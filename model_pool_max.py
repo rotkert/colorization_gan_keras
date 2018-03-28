@@ -77,15 +77,15 @@ def create_model_gen(input_shape, output_channels):
     up6 = UpSampling2D((2,2))(conv6)
     merge6 = concatenate([up6, pool4], axis=3)
     
-    conv7 = create_conv_transpose(256, (4, 4), merge6, 'conv7', strides = 1, activation='leakyrelu')
+    conv7 = create_conv_transpose(512, (4, 4), merge6, 'conv7', strides = 1, activation='leakyrelu')
     up7 = UpSampling2D((2,2))(conv7)
     merge7 = concatenate([up7, pool3], axis=3)
     
-    conv8 = create_conv_transpose(128, (4, 4), merge7, 'conv8', strides = 1, activation='leakyrelu')
+    conv8 = create_conv_transpose(256, (4, 4), merge7, 'conv8', strides = 1, activation='leakyrelu')
     up8 = UpSampling2D((2,2))(conv8)
     merge8 = concatenate([up8, pool2], axis=3)
     
-    conv9 = create_conv_transpose(64, (4, 4), merge8, 'conv9', strides = 1, activation='leakyrelu')
+    conv9 = create_conv_transpose(128, (4, 4), merge8, 'conv9', strides = 1, activation='leakyrelu')
     up9 = UpSampling2D((2,2))(conv9)
     merge9 = concatenate([up9, pool1], axis=3)
     

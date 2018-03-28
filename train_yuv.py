@@ -11,7 +11,7 @@ from utils_evaluation import evaluator
 from utils_evaluation import calculate_colorfulness
 
 RES_DIR, MODEL, DATASET, COLORSPACE, BATCH_SIZE, DATA_LIMIT = utils.init_train()
-EPOCHS = 5000
+EPOCHS = 109
 LEARNING_RATE = 0.0005
 MOMENTUM = 0.5
 LAMBDA1 = 1
