@@ -10,6 +10,7 @@ import model_simple
 import model_transp
 import model_no_down
 import model_pool_max
+import model_pool_avg
 from skimage import color
 from PIL import Image
 
@@ -67,6 +68,14 @@ def create_models(MODEL, size, LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2):
             loss_weights=[LAMBDA1, LAMBDA2])
     elif (MODEL == "model_pool_max"):
         model_gen, model_dis, model_gan = model_pool_max.create_models(
+            input_shape_gen = (size, size, 4),
+            input_shape_dis = (size, size, 3),
+            output_channels=2,
+            lr=LEARNING_RATE,
+            momentum=MOMENTUM,
+            loss_weights=[LAMBDA1, LAMBDA2])
+    elif (MODEL == "model_pool_avg"):
+        model_gen, model_dis, model_gan = model_pool_avg.create_models(
             input_shape_gen = (size, size, 4),
             input_shape_dis = (size, size, 3),
             output_channels=2,
