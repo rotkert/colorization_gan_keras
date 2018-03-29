@@ -11,6 +11,7 @@ import model_transp
 import model_no_down
 import model_pool_max
 import model_pool_avg
+import model_pool_avg_transp
 from skimage import color
 from PIL import Image
 
@@ -82,10 +83,16 @@ def create_models(MODEL, size, LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2):
             lr=LEARNING_RATE,
             momentum=MOMENTUM,
             loss_weights=[LAMBDA1, LAMBDA2])
+    elif (MODEL == "model_pool_avg_transp"):
+        model_gen, model_dis, model_gan = model_pool_avg_transp.create_models(
+            input_shape_gen = (size, size, 4),
+            input_shape_dis = (size, size, 3),
+            output_channels=2,
+            lr=LEARNING_RATE,
+            momentum=MOMENTUM,
+            loss_weights=[LAMBDA1, LAMBDA2])
     return model_gen, model_dis, model_gan
     
-
-
 def add_noise(images):
     images_noise = []
     for image in images: 
