@@ -86,7 +86,7 @@ def create_model_gen(input_shape, output_channels):
     merge9 = concatenate([conv9, pool1], axis=3)
     
     conv10 = create_conv_transpose(64, (4, 4), merge9, 'conv10', strides = 2, activation='leakyrelu')
-    conv11 = Conv2D(output_channels, (1, 1), padding='same', name='conv11', activation = 'tanh')(up10)
+    conv11 = Conv2D(output_channels, (1, 1), padding='same', name='conv11', activation = 'tanh')(conv10)
 
     return Model(inputs=inputs, outputs=conv11, name='generator')
 
