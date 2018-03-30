@@ -132,9 +132,8 @@ def convert_colorspace(data, colorspace):
         return data_yuv
     
     elif colorspace == 'LAB':
-        data_lab = color.rgb2lab(data_RGB)
-        data_gray = color.rgb2gray(data_RGB)[:, :, :, None]
-        return data_lab, data_gray
+        data_lab = color.rgb2lab(data)
+        return data_lab
     
 def normalize_images(data, mean = None):
     if mean is None:
