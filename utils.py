@@ -106,8 +106,8 @@ def process_after_predicted(uv_pred, y, mean, colorspace):
     yuv_pred[:, :, 0] += mean[0]
     yuv_pred[:, :, 1] += mean[1]
     yuv_pred[:, :, 2] += mean[2]
-    yuv_pred *= 255
     if colorspace == "YUV":
+        yuv_pred *= 255
         return np.clip(np.abs(color.yuv2rgb(yuv_pred)), 0, 255).astype(np.uint8)
     elif colorspace == "LAB":
         return np.clip(np.abs(color.lab2rgb(yuv_pred)), 0, 255).astype(np.uint8)
