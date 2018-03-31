@@ -101,13 +101,16 @@ def add_noise(images):
         images_noise.append(image_noise)
     return np.array(images_noise)
 
-def process_after_predicted(uv_pred, y, mean):
+def process_after_predicted(uv_pred, y, mean, colorspace):
     yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
     yuv_pred[:, :, 0] += mean[0]
     yuv_pred[:, :, 1] += mean[1]
     yuv_pred[:, :, 2] += mean[2]
     yuv_pred *= 255
-    return np.clip(np.abs(color.yuv2rgb(yuv_pred)), 0, 255).astype(np.uint8)
+    if colorspace == "YUV":
+        return np.clip(np.abs(color.yuv2rgb(yuv_pred)), 0, 255).astype(np.uint8)
+    elif colorspace == "LAB":
+        return np.clip(np.abs(color.lab2rgb(yuv_pred)), 0, 255).astype(np.uint8)
 
 def save_weights(res_dir, model_gen, model_dis, model_gan, epoch_str):
     weights_dir = os.path.join(res_dir, "weights_epoch_" + epoch_str)
