@@ -94,7 +94,7 @@ for e in range(1, EPOCHS):
                 y = data_test_y[i]
                 y_noise = data_test_y_noise[i]
                 uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
-                rgb_pred = utils.process_after_predicted(uv_pred, y, mean)
+                rgb_pred = utils.process_after_predicted(uv_pred, y, mean, COLORSPACE)
                 image_value = utils.create_image_summary(rgb_pred, i)
                 image_values.append(image_value)
             summary = tf.Summary(value = image_values)
@@ -123,7 +123,7 @@ for e in range(1, EPOCHS):
                 y = data_y[i]
                 y_noise = data_y_noise[i]
                 uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
-                rgb_pred = utils.process_after_predicted(uv_pred, y, mean)
+                rgb_pred = utils.process_after_predicted(uv_pred, y, mean, COLORSPACE)
                 image_value = utils.create_image_summary(rgb_pred, i)
                 image_values.append(image_value)
             summary = tf.Summary(value = image_values)
@@ -134,7 +134,7 @@ for e in range(1, EPOCHS):
                 y = data_valid_y[i]
                 y_noise = data_valid_y_noise[i]
                 uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
-                rgb_pred = utils.process_after_predicted(uv_pred, y, mean)
+                rgb_pred = utils.process_after_predicted(uv_pred, y, mean, COLORSPACE)
                 valid_image_value = utils.create_image_summary(rgb_pred, i, "_valid")
                 valid_image_values.append(valid_image_value)
             summary = tf.Summary(value = valid_image_values)
@@ -146,7 +146,7 @@ for e in range(1, EPOCHS):
                 y = data_valid_y[i]
                 y_noise = data_valid_y_noise[i]
                 uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
-                rgb_pred = utils.process_after_predicted(uv_pred, y, mean)
+                rgb_pred = utils.process_after_predicted(uv_pred, y, mean, COLORSPACE)
                 rgb_pred_values.append(rgb_pred)
             rgb_pred_values = np.array(rgb_pred_values)
             class_acc = evaluator.evaluate(rgb_pred_values, lables_valid)    
