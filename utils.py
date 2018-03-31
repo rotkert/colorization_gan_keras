@@ -110,7 +110,11 @@ def process_after_predicted(uv_pred, y, mean, colorspace):
         yuv_pred *= 255
         return np.clip(np.abs(color.yuv2rgb(yuv_pred)), 0, 255).astype(np.uint8)
     elif colorspace == "LAB":
-        return np.clip(np.abs(color.lab2rgb(yuv_pred)), 0, 255).astype(np.uint8)
+        data = yuv_pred * 100
+        data = np.clip(np.abs(color.lab2rgb(data)), 0, 1)
+        data *= 255
+        data = data.astype(np.uint8)
+        return data
 
 def save_weights(res_dir, model_gen, model_dis, model_gan, epoch_str):
     weights_dir = os.path.join(res_dir, "weights_epoch_" + epoch_str)
