@@ -6,8 +6,13 @@ import tensorflow as tf
 from keras.models import load_model
 
 class evaluator:
-    def __init__(self):
-        self.model = load_model("F:\\OneDrive - Politechnika Warszawska\\mgr-wyniki\\models\\vgg16_cifar10.h5")
+    def __init__(self, dataset):
+        if dataset == "cifar10":
+            self.model = load_model("F:\\OneDrive - Politechnika Warszawska\\mgr-wyniki\\models\\vgg16_cifar10.h5")
+            self.num_labels = 10
+        elif dataset == "cifar100":
+            self.model = load_model("F:\\OneDrive - Politechnika Warszawska\\mgr-wyniki\\models\\vgg16_cifar100.h5")
+            self.num_labels = 100
 
     def normalize_production(self, x):
         mean = 120.707
@@ -16,7 +21,7 @@ class evaluator:
 
     def evaluate(self, images, labels):
         images = self.normalize_production(images)
-        y = keras.utils.to_categorical(labels, 10)
+        y = keras.utils.to_categorical(labels, self.num_labels)
         ev = self.model.evaluate(images, y)
         ev = np.round(np.array(ev), 4)
         return ev[1]

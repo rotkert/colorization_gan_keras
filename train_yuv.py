@@ -17,7 +17,7 @@ MOMENTUM = 0.5
 LAMBDA1 = 1
 LAMBDA2 = 0
 
-data_yuv,  mean = load_train_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE)
+data_yuv, mean = load_train_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE)
 data_valid_yuv, lables_valid = load_valid_data(dataset = DATASET, colorspace = COLORSPACE, mean = mean, size = 500)
 data_test_yuv, _ = load_test_data(dataset = DATASET, colorspace = COLORSPACE, mean = mean)
 
@@ -32,7 +32,7 @@ model_gen, model_dis, model_gan = utils.create_models(MODEL, data_yuv.shape[1], 
 model_gen.summary()
 model_dis.summary()
 model_gan.summary()
-evaluator = evaluator()
+evaluator = evaluator(dataset = DATASET)
  
 writer = tf.summary.FileWriter(RES_DIR)
 writer.add_graph(K.get_session().graph)

@@ -82,7 +82,7 @@ def load_cifar100_train_data():
     batch_data = unpickle(filename)
     data = batch_data[b'data']
     labels = batch_data[b'fine_labels']
-    return data, labels
+    return data, np.array(labels)
 
 def load_cifar100_test_data():
     filename = '{}/test'.format(CIFAR100_PATH)
