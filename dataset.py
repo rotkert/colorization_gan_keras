@@ -109,7 +109,6 @@ def load_stl10_test_data():
         everything = np.fromfile(f, dtype=np.uint8)
         images = np.reshape(everything, (-1, 3, 96, 96))
         images = np.transpose(images, (0, 3, 2, 1))
-        return images
     with open(filenme_labels, 'rb') as f:
         labels = np.fromfile(f, dtype=np.uint8)
     return images, labels
