@@ -151,8 +151,8 @@ class cifar10vgg:
         lr_decay = 1e-6
         lr_drop = 20
         # The data, shuffled and split between train and test sets:
-        (x_train, y_train) = load_stl10_train_data() 
-        (x_test, y_test) = load_stl10_test_data()
+        x_train, y_train = load_stl10_train_data() 
+        x_test, y_test = load_stl10_test_data()
         x_train = x_train.astype('float32')
         x_test = x_test.astype('float32')
         x_train, x_test = self.normalize(x_train, x_test)
