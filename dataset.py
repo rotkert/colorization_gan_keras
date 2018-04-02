@@ -2,12 +2,13 @@ import os
 import glob
 import pickle
 import numpy as np
+import paths
 from scipy.misc import imread
 from skimage import color
 
-CIFAR10_PATH = '..\\dataset\\cifar-10-batches-py'
-CIFAR100_PATH = '..\\dataset\\cifar-100-python'
-STL10_PATH = '..\\dataset\\stl10_binary'
+CIFAR10_PATH = paths.CIFAR10_PATH
+CIFAR100_PATH = paths.CIFAR100_PATH
+STL10_PATH = paths.STL10_PATH
 
 def load_train_data(dataset, data_limit, colorspace):
     if dataset == "cifar10":
