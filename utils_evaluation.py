@@ -10,14 +10,16 @@ class evaluator:
         if dataset == "cifar10":
             self.model = load_model("F:\\OneDrive - Politechnika Warszawska\\mgr-wyniki\\models\\vgg16_cifar10.h5")
             self.num_labels = 10
+            self.mean = 120.707
+            self.std = 64.15
         elif dataset == "cifar100":
             self.model = load_model("F:\\OneDrive - Politechnika Warszawska\\mgr-wyniki\\models\\vgg16_cifar100.h5")
             self.num_labels = 100
+            self.mean = 121.936
+            self.std = 68.389
 
     def normalize_production(self, x):
-        mean = 120.707
-        std = 64.15
-        return (x-mean)/(std+1e-7)
+        return (x - self.mean) / (self.std + 1e-7)
 
     def evaluate(self, images, labels):
         images = self.normalize_production(images)
