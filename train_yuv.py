@@ -45,8 +45,8 @@ for e in range(1, EPOCHS):
     progbar = generic_utils.Progbar(batch_total * BATCH_SIZE)
 
     dis_res = 0
-    data_y_noise = utils.add_noise(data_y)
-    data_test_y_noise = utils.add_noise(data_test_y)
+    data_y_noise = data_y
+    data_test_y_noise = data_test_y
     while batch_counter < batch_total:
         uv_batch = data_uv[(batch_counter - 1) * BATCH_SIZE:batch_counter * BATCH_SIZE]
         y_batch = data_y[(batch_counter - 1) * BATCH_SIZE:batch_counter * BATCH_SIZE]
@@ -108,7 +108,7 @@ for e in range(1, EPOCHS):
             utils.save_models(RES_DIR, model_gen, model_dis, model_gan, str(e))
     else:
         data_valid_y = data_valid_yuv[:, :, :, :1]
-        data_valid_y_noise = utils.add_noise(data_valid_y)
+        data_valid_y_noise = data_valid_y
         data_valid_uv = data_valid_yuv[:, :, :, 1:]
         
         if e % 10 == 0:

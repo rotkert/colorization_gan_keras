@@ -36,9 +36,10 @@ def init_train():
     return res_dir, results.model, results.dataset, results.colorspace, results.batch_size, results.data_limit
 
 def create_models(MODEL, size, LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2):
+    input_shape = (size, size, 1)
     if (MODEL == "model_max_pool") :
         model_gen, model_dis, model_gan = model_max_pool.create_models(
-        input_shape_gen = (size, size, 4),
+        input_shape_gen = input_shape,
         input_shape_dis = (size, size, 3),
         output_channels=2,
         lr=LEARNING_RATE,
@@ -46,7 +47,7 @@ def create_models(MODEL, size, LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2):
         loss_weights=[LAMBDA1, LAMBDA2])
     elif (MODEL == "model_simple"):
         model_gen, model_dis, model_gan = model_simple.create_models(
-            input_shape_gen = (size, size, 4),
+            input_shape_gen = input_shape,
             input_shape_dis = (size, size, 3),
             output_channels=2,
             lr=LEARNING_RATE,
@@ -54,7 +55,7 @@ def create_models(MODEL, size, LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2):
             loss_weights=[LAMBDA1, LAMBDA2])
     elif (MODEL == "model_transp"):
         model_gen, model_dis, model_gan = model_transp.create_models(
-            input_shape_gen = (size, size, 4),
+            input_shape_gen = input_shape,
             input_shape_dis = (size, size, 3),
             output_channels=2,
             lr=LEARNING_RATE,
@@ -62,7 +63,7 @@ def create_models(MODEL, size, LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2):
             loss_weights=[LAMBDA1, LAMBDA2])
     elif (MODEL == "model_no_down"):
         model_gen, model_dis, model_gan = model_no_down.create_models(
-            input_shape_gen = (size, size, 4),
+            input_shape_gen = input_shape,
             input_shape_dis = (size, size, 3),
             output_channels=2,
             lr=LEARNING_RATE,
@@ -70,7 +71,7 @@ def create_models(MODEL, size, LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2):
             loss_weights=[LAMBDA1, LAMBDA2])
     elif (MODEL == "model_pool_max"):
         model_gen, model_dis, model_gan = model_pool_max.create_models(
-            input_shape_gen = (size, size, 4),
+            input_shape_gen = input_shape,
             input_shape_dis = (size, size, 3),
             output_channels=2,
             lr=LEARNING_RATE,
@@ -78,7 +79,7 @@ def create_models(MODEL, size, LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2):
             loss_weights=[LAMBDA1, LAMBDA2])
     elif (MODEL == "model_pool_avg"):
         model_gen, model_dis, model_gan = model_pool_avg.create_models(
-            input_shape_gen = (size, size, 4),
+            input_shape_gen = input_shape,
             input_shape_dis = (size, size, 3),
             output_channels=2,
             lr=LEARNING_RATE,
@@ -86,7 +87,7 @@ def create_models(MODEL, size, LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2):
             loss_weights=[LAMBDA1, LAMBDA2])
     elif (MODEL == "model_transp_lsgan"):
         model_gen, model_dis, model_gan = model_transp_lsgan.create_models(
-            input_shape_gen = (size, size, 4),
+            input_shape_gen = input_shape,
             input_shape_dis = (size, size, 3),
             output_channels=2,
             lr=LEARNING_RATE,
@@ -94,7 +95,7 @@ def create_models(MODEL, size, LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2):
             loss_weights=[LAMBDA1, LAMBDA2])
     elif (MODEL == "model_pool_avg_transp"):
         model_gen, model_dis, model_gan = model_pool_avg_transp.create_models(
-            input_shape_gen = (size, size, 4),
+            input_shape_gen = input_shape,
             input_shape_dis = (size, size, 3),
             output_channels=2,
             lr=LEARNING_RATE,
