@@ -7,3 +7,4 @@ __pycache__/
 vgg16_cifar10.h5
 .settings/org.eclipse.core.resources.prefs
 test.py
+paths.py
