@@ -46,7 +46,7 @@ def load_test_data(dataset, colorspace, mean):
         data, labels = load_cifar10_test_data()
         data = preproc_cifar(data)
     elif dataset == "cifar100":
-        data = load_cifar100_test_data()
+        data, labels = load_cifar100_test_data()
         data = preproc_cifar(data)
     elif dataset == "stl10":
         data = load_stl10_test_data()
@@ -89,7 +89,7 @@ def load_cifar100_test_data():
     batch_data = unpickle(filename)
     data_test = batch_data[b'data']
     labels_test = batch_data[b'fine_labels']
-    return data_test
+    return data_test, np.array(labels_test)
 
 def load_stl10_train_data():
     filename = '{}/train_X.bin'.format(STL10_PATH)
@@ -104,11 +104,15 @@ def load_stl10_train_data():
 
 def load_stl10_test_data():
     filename = '{}/test_X.bin'.format(STL10_PATH)
+    filenme_labels = '{}/test_y.bin'.format(STL10_PATH)
     with open(filename, 'rb') as f:
         everything = np.fromfile(f, dtype=np.uint8)
         images = np.reshape(everything, (-1, 3, 96, 96))
         images = np.transpose(images, (0, 3, 2, 1))
         return images
+    with open(filenme_labels, 'rb') as f:
+        labels = np.fromfile(f, dtype=np.uint8)
+    return images, labels
     
 def unpickle(file):
     with open(file, 'rb') as fo:
