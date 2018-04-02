@@ -14,7 +14,7 @@ from dataset import load_stl10_train_data, load_stl10_test_data
 
 class cifar10vgg:
     def __init__(self,train=True):
-        self.num_classes = 10
+        self.num_classes = 11
         self.weight_decay = 0.0005
         self.x_shape = [96,96,3]
 
@@ -153,6 +153,7 @@ class cifar10vgg:
         # The data, shuffled and split between train and test sets:
         (x_train, y_train) = load_stl10_train_data() 
         (x_test, y_test) = load_stl10_test_data()
+        
         x_train = x_train.astype('float32')
         x_test = x_test.astype('float32')
         x_train, x_test = self.normalize(x_train, x_test)
