@@ -50,7 +50,7 @@ def load_test_data(dataset, colorspace, mean):
         data, labels = load_cifar100_test_data()
         data = preproc_cifar(data)
     elif dataset == "stl10":
-        data = load_stl10_test_data()
+        data, labels = load_stl10_test_data()
     
     data = convert_colorspace(data, colorspace)
     data, _ = normalize_images(data, mean)
@@ -101,6 +101,7 @@ def load_stl10_train_data():
         images = np.transpose(images, (0, 3, 2, 1))
     with open(filenme_labels, 'rb') as f:
         labels = np.fromfile(f, dtype=np.uint8)
+        labels = labels - 1
     return images, labels
 
 def load_stl10_test_data():
@@ -112,6 +113,7 @@ def load_stl10_test_data():
         images = np.transpose(images, (0, 3, 2, 1))
     with open(filenme_labels, 'rb') as f:
         labels = np.fromfile(f, dtype=np.uint8)
+        labels = labels - 1
     return images, labels
     
 def unpickle(file):

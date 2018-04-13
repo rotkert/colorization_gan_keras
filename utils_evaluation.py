@@ -3,20 +3,26 @@ import numpy as np
 import dataset
 import utils
 import tensorflow as tf
+import paths
 from keras.models import load_model
 
 class evaluator:
     def __init__(self, dataset):
         if dataset == "cifar10":
-            self.model = load_model("F:\\OneDrive - Politechnika Warszawska\\mgr-wyniki\\models\\vgg16_cifar10.h5")
+            self.model = load_model(paths.VGG_CIFAR10_PATH)
             self.num_labels = 10
             self.mean = 120.707
             self.std = 64.15
         elif dataset == "cifar100":
-            self.model = load_model("F:\\OneDrive - Politechnika Warszawska\\mgr-wyniki\\models\\vgg16_cifar100.h5")
+            self.model = load_model(paths.VGG_CIFAR100_PATH)
             self.num_labels = 100
             self.mean = 121.936
             self.std = 68.389
+        elif dataset == "stl10":
+            self.model = load_model(paths.VGG_STL10_PATH)
+            self.num_labels = 10
+            self.mean = 0
+            self.std = 1
 
     def normalize_production(self, x):
         return (x - self.mean) / (self.std + 1e-7)
