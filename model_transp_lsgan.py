@@ -97,7 +97,7 @@ def create_model_dis(input_shape):
     conv5 = create_conv(512, (3, 3), pool4, 'conv5', activation='leakyrelu', dropout=.8)
 
     flat = Flatten()(conv5)
-    dense6 = Dense(1, activation='sigmoid')(flat)
+    dense6 = Dense(1, activation='linear')(flat)
 
     model = Model(inputs=inputs, outputs=dense6, name='discriminator')
 
@@ -131,7 +131,7 @@ def create_models(input_shape_gen, input_shape_dis, output_channels, lr, momentu
 
     model_gan = create_model_gan(input_shape=input_shape_gen, generator=model_gen, discriminator=model_dis)
     model_gan.compile(
-        loss=[losses.mean_absolute_error, losses.mean_absolute_error],
+        loss=[losses.mean_squared_error, losses.mean_absolute_error],
         metrics=[eacc, 'accuracy', 'mse', 'mae'],
         loss_weights=loss_weights,
         optimizer=optimizer
@@ -139,7 +139,7 @@ def create_models(input_shape_gen, input_shape_dis, output_channels, lr, momentu
 
     model_dis.trainable = True
     model_dis.compile(
-        loss=losses.binary_crossentropy,
+        loss=losses.mean_squared_error,
         optimizer=optimizer)
 
     return model_gen, model_dis, model_gan

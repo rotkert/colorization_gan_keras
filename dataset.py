@@ -75,7 +75,7 @@ def load_cifar10_test_data():
     batch_data = unpickle(filename)
     data_test = batch_data[b'data']
     labels_test = batch_data[b'labels']
-    return data_test, labels_test
+    return data_test, np.array(labels_test)
 
 def load_cifar100_train_data():
     data, labels = [], []
