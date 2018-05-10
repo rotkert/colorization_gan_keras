@@ -57,16 +57,16 @@ def create_conv_transpose(filters, kernel_size, inputs, name=None, bn=True, drop
 
 def create_model_gen(input_shape, output_channels):
     inputs = Input(input_shape)
-    conv1 = create_conv(64, (4, 4), inputs, 'conv1', strides = 1, activation='leakyrelu')
-    conv1 = create_conv(64, (4, 4), conv1, 'conv1', strides = 2, activation='leakyrelu')
+    conv1 = create_conv(64, (4, 4), inputs, 'conv1_1', strides = 1, activation='leakyrelu')
+    conv1 = create_conv(64, (4, 4), conv1, 'conv1_2', strides = 2, activation='leakyrelu')
     
-    conv2 = create_conv(128, (4, 4), conv1, 'conv2', strides = 1, activation='leakyrelu')
-    conv2 = create_conv(128, (4, 4), conv2, 'conv2', strides = 2, activation='leakyrelu')
+    conv2 = create_conv(128, (4, 4), conv1, 'conv2_1', strides = 1, activation='leakyrelu')
+    conv2 = create_conv(128, (4, 4), conv2, 'conv2_2', strides = 2, activation='leakyrelu')
     
-    conv3 = create_conv(256, (4, 4), conv2, 'conv3', strides = 1, activation='leakyrelu')
-    conv3 = create_conv(256, (4, 4), conv3, 'conv3', strides = 2, activation='leakyrelu')
+    conv3 = create_conv(256, (4, 4), conv2, 'conv3_1', strides = 1, activation='leakyrelu')
+    conv3 = create_conv(256, (4, 4), conv3, 'conv3_2', strides = 2, activation='leakyrelu')
     
-    conv4 = create_conv(512, (4, 4), conv3, 'conv4', strides = 1, activation='leakyrelu')
+    conv4 = create_conv(512, (4, 4), conv3, 'conv4_1', strides = 2, activation='leakyrelu')
     
     conv5 = create_conv(512, (4, 4), conv4, 'conv5', strides = 2, activation='leakyrelu')
     
