@@ -57,20 +57,34 @@ def create_conv_transpose(filters, kernel_size, inputs, name=None, bn=True, drop
 
 def create_model_gen(input_shape, output_channels):
     inputs = Input(input_shape)
-    conv1 = create_conv(64, (4, 4), inputs, 'conv1', strides = 2, activation='leakyrelu')
-    conv2 = create_conv(128, (4, 4), conv1, 'conv2', strides = 2, activation='leakyrelu')
-    conv3 = create_conv(256, (4, 4), conv2, 'conv3', strides = 2, activation='leakyrelu')
-    conv4 = create_conv(512, (4, 4), conv3, 'conv4', strides = 2, activation='leakyrelu')
+    conv1 = create_conv(64, (4, 4), inputs, 'conv1', strides = 1, activation='leakyrelu')
+    conv1 = create_conv(64, (4, 4), conv1, 'conv1', strides = 2, activation='leakyrelu')
+    
+    conv2 = create_conv(128, (4, 4), conv1, 'conv2', strides = 1, activation='leakyrelu')
+    conv2 = create_conv(128, (4, 4), conv2, 'conv2', strides = 2, activation='leakyrelu')
+    
+    conv3 = create_conv(256, (4, 4), conv2, 'conv3', strides = 1, activation='leakyrelu')
+    conv3 = create_conv(256, (4, 4), conv3, 'conv3', strides = 2, activation='leakyrelu')
+    
+    conv4 = create_conv(512, (4, 4), conv3, 'conv4', strides = 1, activation='leakyrelu')
+    
     conv5 = create_conv(512, (4, 4), conv4, 'conv5', strides = 2, activation='leakyrelu')
     
     conv6 = create_conv_transpose(512, (4, 4), conv5, 'conv6', strides = 2, activation='leakyrelu')
     merge6 = concatenate([conv6, conv4], axis=3)
-    conv7 = create_conv_transpose(512, (4, 4), merge6, 'conv7', strides = 2, activation='leakyrelu')
+    
+    conv7 = create_conv_transpose(512, (4, 4), merge6, 'conv7', strides = 1, activation='leakyrelu')
+    conv7 = create_conv_transpose(512, (4, 4), conv7, 'conv7', strides = 2, activation='leakyrelu')
     merge7 = concatenate([conv7, conv3], axis=3)
-    conv8 = create_conv_transpose(256, (4, 4), merge7, 'conv8', strides = 2, activation='leakyrelu')
+    
+    conv8 = create_conv_transpose(256, (4, 4), merge7, 'conv8', strides = 1, activation='leakyrelu')
+    conv8 = create_conv_transpose(256, (4, 4), conv8, 'conv8', strides = 2, activation='leakyrelu')
     merge8 = concatenate([conv8, conv2], axis=3)
-    conv9 = create_conv_transpose(128, (4, 4), merge8, 'conv9', strides = 2, activation='leakyrelu')
+    
+    conv9 = create_conv_transpose(128, (4, 4), merge8, 'conv9', strides = 1, activation='leakyrelu')
+    conv9 = create_conv_transpose(128, (4, 4), conv9, 'conv9', strides = 2, activation='leakyrelu')
     merge9 = concatenate([conv9, conv1], axis=3)
+    
     conv10 = create_conv_transpose(64, (4, 4), merge9, 'conv10', strides = 2, activation='leakyrelu')
     
     conv11 = Conv2D(output_channels, (1, 1), padding='same', name='conv11', activation = 'tanh')(conv10)
