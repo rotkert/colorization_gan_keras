@@ -98,23 +98,19 @@ def create_model_gen(input_shape, output_channels):
 
 def create_model_dis(input_shape):
     inputs = Input(input_shape)
-    conv1 = create_conv(64, (3, 3), inputs, 'conv1_1', activation='leakyrelu', dropout=.6)
-    conv1 = create_conv(64, (3, 3), conv1, 'conv1_2', activation='leakyrelu', dropout=.6)
+    conv1 = create_conv(64, (3, 3), inputs, 'conv1_1', activation='leakyrelu', dropout=.8)
     pool1 = MaxPool2D((2, 2))(conv1)
 
-    conv2 = create_conv(128, (3, 3), pool1, 'conv2_1', activation='leakyrelu', dropout=.6)
-    conv2 = create_conv(128, (3, 3), conv2, 'conv2_2', activation='leakyrelu', dropout=.6)
+    conv2 = create_conv(128, (3, 3), pool1, 'conv2_1', activation='leakyrelu', dropout=.8)
     pool2 = MaxPool2D((2, 2))(conv2)
 
-    conv3 = create_conv(256, (3, 3), pool2, 'conv3_1', activation='leakyrelu', dropout=.6)
-    conv3 = create_conv(256, (3, 3), conv3, 'conv3_2', activation='leakyrelu', dropout=.6)
+    conv3 = create_conv(256, (3, 3), pool2, 'conv3_1', activation='leakyrelu', dropout=.8)
     pool3 = MaxPool2D((2, 2))(conv3)
 
-    conv4 = create_conv(512, (3, 3), pool3, 'conv4_1', activation='leakyrelu', dropout=.6)
-    conv4 = create_conv(512, (3, 3), conv4, 'conv4_2', activation='leakyrelu', dropout=.6)
+    conv4 = create_conv(512, (3, 3), pool3, 'conv4_1', activation='leakyrelu', dropout=.8)
     pool4 = MaxPool2D((2, 2))(conv4)
 
-    conv5 = create_conv(512, (3, 3), pool4, 'conv5', activation='leakyrelu', dropout=.6)
+    conv5 = create_conv(512, (3, 3), pool4, 'conv5', activation='leakyrelu', dropout=.8)
 
     flat = Flatten()(conv5)
     dense6 = Dense(1, activation='linear')(flat)
@@ -160,6 +156,6 @@ def create_models(input_shape_gen, input_shape_dis, output_channels, lr, momentu
     model_dis.trainable = True
     model_dis.compile(
         loss=losses.mean_squared_error,
-        optimizer=optimizer)
+        optimizer=Adam(lr=0.001, beta_1=0.5))
 
     return model_gen, model_dis, model_gan
