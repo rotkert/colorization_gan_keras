@@ -66,11 +66,13 @@ def create_model_gen(input_shape, output_channels):
     conv3 = create_conv(256, (4, 4), conv2, 'conv3_1', strides = 1, activation='leakyrelu')
     conv3 = create_conv(256, (4, 4), conv3, 'conv3_2', strides = 2, activation='leakyrelu')
     
-    conv4 = create_conv(512, (4, 4), conv3, 'conv4_1', strides = 2, activation='leakyrelu')
+    conv4 = create_conv(512, (4, 4), conv3, 'conv4_1', strides = 1, activation='leakyrelu')
+    conv4 = create_conv(512, (4, 4), conv4, 'conv4_2', strides = 2, activation='leakyrelu')
     
     conv5 = create_conv(512, (4, 4), conv4, 'conv5', strides = 2, activation='leakyrelu')
     
-    conv6 = create_conv_transpose(512, (4, 4), conv5, 'conv6', strides = 2, activation='leakyrelu')
+    conv6 = create_conv_transpose(512, (4, 4), conv5, 'conv6_1', strides = 1, activation='leakyrelu')
+    conv6 = create_conv_transpose(512, (4, 4), conv6, 'conv6_2', strides = 2, activation='leakyrelu')
     merge6 = concatenate([conv6, conv4], axis=3)
     
     conv7 = create_conv_transpose(512, (4, 4), merge6, 'conv7_1', strides = 1, activation='leakyrelu')
@@ -96,19 +98,23 @@ def create_model_gen(input_shape, output_channels):
 
 def create_model_dis(input_shape):
     inputs = Input(input_shape)
-    conv1 = create_conv(64, (3, 3), inputs, 'conv1', activation='leakyrelu', dropout=.8)
+    conv1 = create_conv(64, (3, 3), inputs, 'conv1_1', activation='leakyrelu', dropout=.6)
+    conv1 = create_conv(64, (3, 3), conv1, 'conv1_2', activation='leakyrelu', dropout=.6)
     pool1 = MaxPool2D((2, 2))(conv1)
 
-    conv2 = create_conv(128, (3, 3), pool1, 'conv2', activation='leakyrelu', dropout=.8)
+    conv2 = create_conv(128, (3, 3), pool1, 'conv2_1', activation='leakyrelu', dropout=.6)
+    conv2 = create_conv(128, (3, 3), conv2, 'conv2_2', activation='leakyrelu', dropout=.6)
     pool2 = MaxPool2D((2, 2))(conv2)
 
-    conv3 = create_conv(256, (3, 3), pool2, 'conv3', activation='leakyrelu', dropout=.8)
+    conv3 = create_conv(256, (3, 3), pool2, 'conv3_1', activation='leakyrelu', dropout=.6)
+    conv3 = create_conv(256, (3, 3), conv3, 'conv3_2', activation='leakyrelu', dropout=.6)
     pool3 = MaxPool2D((2, 2))(conv3)
 
-    conv4 = create_conv(512, (3, 3), pool3, 'conv4', activation='leakyrelu', dropout=.8)
+    conv4 = create_conv(512, (3, 3), pool3, 'conv4_1', activation='leakyrelu', dropout=.6)
+    conv4 = create_conv(512, (3, 3), conv4, 'conv4_2', activation='leakyrelu', dropout=.6)
     pool4 = MaxPool2D((2, 2))(conv4)
 
-    conv5 = create_conv(512, (3, 3), pool4, 'conv5', activation='leakyrelu', dropout=.8)
+    conv5 = create_conv(512, (3, 3), pool4, 'conv5', activation='leakyrelu', dropout=.6)
 
     flat = Flatten()(conv5)
     dense6 = Dense(1, activation='linear')(flat)

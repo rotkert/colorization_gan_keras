@@ -12,10 +12,10 @@ from utils_evaluation import calculate_colorfulness
 
 RES_DIR, MODEL, DATASET, COLORSPACE, BATCH_SIZE, DATA_LIMIT = utils.init_train()
 EPOCHS = 109
-LEARNING_RATE = 0.0005
+LEARNING_RATE = 0.0002
 MOMENTUM = 0.5
 LAMBDA1 = 1
-LAMBDA2 = 0
+LAMBDA2 = 100
 
 data_yuv, mean = load_train_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE)
 data_valid_yuv, lables_valid = load_valid_data(dataset = DATASET, colorspace = COLORSPACE, mean = mean, size = 500)
@@ -58,11 +58,10 @@ for e in range(1, EPOCHS):
         if toggle:
             x_dis = np.concatenate((model_gen.predict(y_batch_noise), y_batch), axis=3)
             y_dis = np.zeros((BATCH_SIZE, 1))
-            y_dis = np.random.uniform(low=0.0, high=0.2, size=BATCH_SIZE)
         else:
             x_dis = np.concatenate((uv_batch, y_batch), axis=3)
             y_dis = np.ones((BATCH_SIZE, 1))
-            y_dis = np.random.uniform(low=0.8, high=1.1, size=BATCH_SIZE)
+            y_dis = np.random.uniform(low=0.8, high=1.0, size=BATCH_SIZE)
       
         dis_res = model_dis.train_on_batch(x_dis, y_dis)
       
@@ -92,13 +91,13 @@ for e in range(1, EPOCHS):
         data_test_y_noise = utils.add_noise(data_test_y)
         data_test_uv = data_test_yuv[:, :, :, 1:]
         
-        if e % 10 == 0:
+        if e % 1 == 0:
             ev = model_gan.evaluate(data_test_y_noise, [np.ones((data_test_y_noise.shape[0], 1)), data_test_uv])
             ev = np.round(np.array(ev), 4)
             summary = utils.create_summary_epoch(ev)
             writer.add_summary(summary, e)
          
-        if e % 10 == 0:
+        if e % 1 == 0:
             image_values = []
             for i in range (0, 50):
                 y = data_y[i]
@@ -121,7 +120,7 @@ for e in range(1, EPOCHS):
             summary = tf.Summary(value = test_image_values)
             writer.add_summary(summary, e)
             
-        if e % 10 == 0:
+        if e % 1 == 0:
             rgb_pred_values = []
             for i in range (data_test_yuv.shape[0]):
                 y = data_test_y[i]
