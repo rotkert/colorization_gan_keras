@@ -21,8 +21,8 @@ class evaluator:
         elif dataset == "stl10":
             self.model = load_model(paths.VGG_STL10_PATH)
             self.num_labels = 10
-            self.mean = 0
-            self.std = 1
+            self.mean = 109.92
+            self.std = 67.1
 
     def normalize_production(self, x):
         return (x - self.mean) / (self.std + 1e-7)
