@@ -11,11 +11,11 @@ from utils_evaluation import evaluator
 from utils_evaluation import calculate_colorfulness
 
 RES_DIR, MODEL, DATASET, COLORSPACE, BATCH_SIZE, DATA_LIMIT = utils.init_train()
-EPOCHS = 109
-LEARNING_RATE = 0.0005
+EPOCHS = 1090
+LEARNING_RATE = 0.0002
 MOMENTUM = 0.5
 LAMBDA1 = 1
-LAMBDA2 = 0
+LAMBDA2 = 100
 
 data_yuv, mean = load_train_data(dataset = DATASET, data_limit = DATA_LIMIT, colorspace = COLORSPACE)
 data_valid_yuv, lables_valid = load_valid_data(dataset = DATASET, colorspace = COLORSPACE, mean = mean, size = 500)
