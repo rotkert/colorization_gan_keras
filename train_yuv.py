@@ -140,47 +140,47 @@ for e in range(1, EPOCHS):
         data_valid_y_noise = utils.add_noise(data_valid_y)
         data_valid_uv = data_valid_yuv[:, :, :, 1:]
         
-        if e % 10 == 0:
-            ev = model_gan.evaluate(data_valid_y_noise, [np.ones((data_valid_y_noise.shape[0], 1)), data_valid_uv])
-            ev = np.round(np.array(ev), 4)
-            summary = utils.create_summary_epoch(ev)
-            writer.add_summary(summary, e)
+#         if e % 10 == 0:
+#             ev = model_gan.evaluate(data_valid_y_noise, [np.ones((data_valid_y_noise.shape[0], 1)), data_valid_uv])
+#             ev = np.round(np.array(ev), 4)
+#             summary = utils.create_summary_epoch(ev)
+#             writer.add_summary(summary, e)
          
-        if e % 10 == 0:
+        if e % 1 == 0:
             image_values = []
-            for i in range (0, 50):
-                y = data_y[i]
-                y_noise = data_y_noise[i]
-                uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
-                rgb_pred = utils.process_after_predicted(uv_pred, y, mean, COLORSPACE)
-                image_value = utils.create_image_summary(rgb_pred, i)
-                image_values.append(image_value)
-            summary = tf.Summary(value = image_values)
-            writer.add_summary(summary, e)
-             
-            valid_image_values = []
-            for i in range (0, 50):
-                y = data_valid_y[i]
-                y_noise = data_valid_y_noise[i]
-                uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
-                rgb_pred = utils.process_after_predicted(uv_pred, y, mean, COLORSPACE)
-                valid_image_value = utils.create_image_summary(rgb_pred, i, "_valid")
-                valid_image_values.append(valid_image_value)
-            summary = tf.Summary(value = valid_image_values)
-            writer.add_summary(summary, e)
             
-        if e % 10 == 0:
-            rgb_pred_values = []
-            for i in range (data_valid_yuv.shape[0]):
-                y = data_valid_y[i]
-                y_noise = data_valid_y_noise[i]
-                uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
-                rgb_pred = utils.process_after_predicted(uv_pred, y, mean, COLORSPACE)
-                rgb_pred_values.append(rgb_pred)
-            rgb_pred_values = np.array(rgb_pred_values)
-            class_acc = evaluator.evaluate(rgb_pred_values, lables_valid)    
-            colorfulness = calculate_colorfulness(rgb_pred_values)
-            summary = utils.create_summary_evaluation(class_acc, colorfulness)
-            writer.add_summary(summary, e)
-            utils.save_weights(RES_DIR, model_gen, model_dis, model_gan, str(e))
+            y = data_y[7]
+            y_noise = data_y_noise[7]
+            uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
+            rgb_pred = utils.process_after_predicted(uv_pred, y, mean, COLORSPACE)
+            image_value = utils.create_image_summary(rgb_pred, e)
+            image_values.append(image_value)
+            summary = tf.Summary(value = image_values)
+            writer.add_summary(summary, 0)
+             
+#             valid_image_values = []
+#             for i in range (0, 50):
+#                 y = data_valid_y[i]
+#                 y_noise = data_valid_y_noise[i]
+#                 uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
+#                 rgb_pred = utils.process_after_predicted(uv_pred, y, mean, COLORSPACE)
+#                 valid_image_value = utils.create_image_summary(rgb_pred, i, "_valid")
+#                 valid_image_values.append(valid_image_value)
+#             summary = tf.Summary(value = valid_image_values)
+#             writer.add_summary(summary, e)
+            
+#         if e % 10 == 0:
+#             rgb_pred_values = []
+#             for i in range (data_valid_yuv.shape[0]):
+#                 y = data_valid_y[i]
+#                 y_noise = data_valid_y_noise[i]
+#                 uv_pred = np.array(model_gen.predict(y_noise[None, :, :, :]))[0]
+#                 rgb_pred = utils.process_after_predicted(uv_pred, y, mean, COLORSPACE)
+#                 rgb_pred_values.append(rgb_pred)
+#             rgb_pred_values = np.array(rgb_pred_values)
+#             class_acc = evaluator.evaluate(rgb_pred_values, lables_valid)    
+#             colorfulness = calculate_colorfulness(rgb_pred_values)
+#             summary = utils.create_summary_evaluation(class_acc, colorfulness)
+#             writer.add_summary(summary, e)
+#             utils.save_weights(RES_DIR, model_gen, model_dis, model_gan, str(e))
             
