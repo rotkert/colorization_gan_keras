@@ -89,7 +89,7 @@ for e in range(1, EPOCHS):
            
     if (DATA_LIMIT == -1):
         data_test_y = data_test_yuv[:, :, :, :1]
-        data_test_y_noise = utils.add_noise(data_test_y)
+        data_test_y_noise = data_test_y
         data_test_uv = data_test_yuv[:, :, :, 1:]
         
         if e % 10 == 0:
