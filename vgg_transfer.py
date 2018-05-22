@@ -5,7 +5,7 @@ from keras.layers import Dropout
 from keras.layers import Flatten
 from keras.layers import Dense
 from keras.utils import np_utils
-import dataset
+import utils_dataset
 
 image_width, image_height = 96, 96
 base_model = VGG16(weights='imagenet', include_top=False, input_shape=(image_width, image_height, 3))
@@ -14,7 +14,7 @@ epochs = 50
 labels_num = 10
 batch_size = 32
 
-data, labels = dataset.load_stl10_train_data()
+data, labels = utils_dataset.load_stl10_train_data()
 labels = np_utils.to_categorical(labels, labels_num)
 
 last = base_model.output

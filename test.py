@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import utils
-import dataset
+import utils_dataset
 
 model = "model_transp_lsgan"
 dataset = "cifar100"
@@ -13,8 +13,8 @@ momentum = 0.5
 lambda1 = 1
 lambda2 = 100
 
-data, mean = dataset.load_train_data(dataset = dataset, data_limit = data_limit, colorspace = colorspace)
-data_test, lables_test = dataset.load_test_data(dataset = dataset, colorspace = colorspace, mean = mean)
+data, mean = utils_dataset.load_train_data(dataset = dataset, data_limit = data_limit, colorspace = colorspace)
+data_test, lables_test = utils_dataset.load_test_data(dataset = dataset, colorspace = colorspace, mean = mean)
 
 data_grey = data[:, :, :, :1]
 data_color = data[:, :, :, 1:]

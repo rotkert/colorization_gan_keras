@@ -5,13 +5,13 @@ from keras.layers import Input
 from keras.layers import Flatten
 from keras.layers import Dense
 from keras import losses
-import dataset
+import utils_dataset
 
-data, labels = dataset.load_cifar10_train_data()
-data_test, labels_test = dataset.load_cifar10_test_data()
+data, labels = utils_dataset.load_cifar10_train_data()
+data_test, labels_test = datutils_datasetaset.load_cifar10_test_data()
 
-data = dataset.preproc_cifar(data)
-data_test = dataset.preproc_cifar(data_test)
+data = utils_dataset.preproc_cifar(data)
+data_test = utils_dataset.preproc_cifar(data_test)
 
 num = 10
 idx = np.where(np.logical_and(labels >= 0, labels <= num - 1))
@@ -22,11 +22,11 @@ labels_test = labels_test[idx_test]
 data_test = data_test[idx_test]   
     
 data = data / 255
-data, mean = dataset.normalize_images(data)
+data, mean = utils_dataset.normalize_images(data)
 y = keras.utils.to_categorical(labels, num)
 data = np.array(data)
 data_test = data_test / 255
-data_test, _ = dataset.normalize_images(data_test, mean)
+data_test, _ = utils_dataset.normalize_images(data_test, mean)
 y_test = keras.utils.to_categorical(labels_test, num)
 data_test = np.array(data_test)
 

@@ -4,7 +4,7 @@ import keras.backend as K
 from keras.utils import generic_utils
 from tensorflow.contrib.summary.summary_ops import graph
 import utils
-import dataset
+import utils_dataset
 from utils_evaluation import evaluator
 from utils_evaluation import calculate_colorfulness
 
@@ -15,9 +15,9 @@ momentum = 0.5
 lambda1 = 1
 lambda2 = 100
 
-data, mean = dataset.load_train_data(dataset = dataset, data_limit = data_limit, colorspace = colorspace)
-data_valid, lables_valid = dataset.load_valid_data(dataset = dataset, colorspace = colorspace, mean = mean, size = 500)
-data_test, lables_test = dataset.load_test_data(dataset = dataset, colorspace = colorspace, mean = mean)
+data, mean = utils_dataset.load_train_data(dataset = dataset, data_limit = data_limit, colorspace = colorspace)
+data_valid, lables_valid = utils_dataset.load_valid_data(dataset = dataset, colorspace = colorspace, mean = mean, size = 500)
+data_test, lables_test = utils_dataset.load_test_data(dataset = dataset, colorspace = colorspace, mean = mean)
 
 grey = data[:, :, :, :1]
 color = data[:, :, :, 1:]

@@ -1,13 +1,13 @@
 import numpy as np
 import keras
-import dataset
+import utils_dataset
 from keras.models import load_model
 
-data, labels = dataset.load_cifar10_train_data()
-data_test, labels_test = dataset.load_cifar10_test_data()
+data, labels = utils_dataset.load_cifar10_train_data()
+data_test, labels_test = utils_dataset.load_cifar10_test_data()
 
-data = dataset.preproc_cifar(data)
-data_test = dataset.preproc_cifar(data_test)
+data = utils_dataset.preproc_cifar(data)
+data_test = utils_dataset.preproc_cifar(data_test)
 
 num = 10
 idx = np.where(np.logical_and(labels >= 0, labels <= num - 1))

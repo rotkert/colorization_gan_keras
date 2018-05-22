@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
-import dataset
+import utils_dataset
 from skimage import color
 import matplotlib.pyplot as plt
 
-images, _ = dataset.load_stl10_test_data()
+images, _ = utils_dataset.load_stl10_test_data()
 
 image1 = images[0]
 image2 = images[7]
