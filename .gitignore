@@ -9,3 +9,6 @@ vgg16_cifar10.h5
 test.py
 paths.py
 
+weights_gen.h5
+weights_gen_cifar100.h5
+weights_gen_stl10.h5

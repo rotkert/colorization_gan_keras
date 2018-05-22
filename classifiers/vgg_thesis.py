@@ -1,16 +1,6 @@
 import numpy as np
 import keras
-import keras.backend as K
-from keras import Sequential
-from keras.layers import Dense
-from keras.layers import Input
-from keras.models import Model
-from keras.optimizers import Adam
-from keras import losses
-from keras.layers import Flatten
 import dataset
-import matplotlib.pyplot as plt
-from skimage import color
 from keras.models import load_model
 
 data, labels = dataset.load_cifar10_train_data()
@@ -36,8 +26,6 @@ y_test = keras.utils.to_categorical(labels_test, num)
 data_test = (data_test - mean) / (std + 1e-7)
 data_test = np.array(data_test)
 
-
 model = load_model(paths.VGG_CIFAR10_PATH)
-     
 
 print(model.evaluate(data_test, y_test, batch_size =1))

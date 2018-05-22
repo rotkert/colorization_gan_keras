@@ -1,17 +1,11 @@
 import numpy as np
 import keras
-import keras.backend as K
-from keras import Sequential
-from keras.layers import Dense
-from keras.layers import Input
 from keras.models import Model
-from keras.optimizers import Adam
-from keras import losses
+from keras.layers import Input
 from keras.layers import Flatten
+from keras.layers import Dense
+from keras import losses
 import dataset
-import matplotlib.pyplot as plt
-from skimage import color
-from keras.models import load_model
 
 data, labels = dataset.load_cifar10_train_data()
 data_test, labels_test = dataset.load_cifar10_test_data()
@@ -44,7 +38,6 @@ outputs = Dense(num, activation="softmax")(dense2)
 model = Model(inputs=inputs, outputs=outputs)
 
 model.compile(optimizer = "sgd", loss = losses.categorical_crossentropy, metrics = ["accuracy"])
-     
 model.fit(x=data, y=y, batch_size=32, epochs=1)
 
 print(model.evaluate(data_test, y_test, batch_size =1))

@@ -94,24 +94,24 @@ def load_cifar100_test_data():
 
 def load_stl10_train_data():
     filename = '{}/train_X.bin'.format(STL10_PATH)
-    filenme_labels = '{}/train_y.bin'.format(STL10_PATH)
+    filename_labels = '{}/train_y.bin'.format(STL10_PATH)
     with open(filename, 'rb') as f:
         everything = np.fromfile(f, dtype=np.uint8)
         images = np.reshape(everything, (-1, 3, 96, 96))
         images = np.transpose(images, (0, 3, 2, 1))
-    with open(filenme_labels, 'rb') as f:
+    with open(filename_labels, 'rb') as f:
         labels = np.fromfile(f, dtype=np.uint8)
         labels = labels - 1
     return images, labels
 
 def load_stl10_test_data():
     filename = '{}/test_X.bin'.format(STL10_PATH)
-    filenme_labels = '{}/test_y.bin'.format(STL10_PATH)
+    filename_labels = '{}/test_y.bin'.format(STL10_PATH)
     with open(filename, 'rb') as f:
         everything = np.fromfile(f, dtype=np.uint8)
         images = np.reshape(everything, (-1, 3, 96, 96))
         images = np.transpose(images, (0, 3, 2, 1))
-    with open(filenme_labels, 'rb') as f:
+    with open(filename_labels, 'rb') as f:
         labels = np.fromfile(f, dtype=np.uint8)
         labels = labels - 1
     return images, labels
