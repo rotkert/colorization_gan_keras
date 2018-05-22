@@ -5,7 +5,6 @@ import datetime
 import argparse
 import numpy as np
 import tensorflow as tf
-import model_max_pool
 import model_simple
 import model_transp
 import model_no_down
