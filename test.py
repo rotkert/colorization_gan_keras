@@ -22,7 +22,7 @@ data_color = data[:, :, :, 1:]
 data_test_grey = data_test[:, :, :, :1]
 data_test_color = data_test[:, :, :, 1:]
 
-data_test_grey_noise = urils.add_noise(data_test_grey)
+data_test_grey_noise = utils.add_noise(data_test_grey)
 
 model_gen, model_dis, model_gan = utils.create_models(model, data.shape[1], learning_rate, momentum, lambda1, lambda2)
 model_gen.load_weights("weights/weights_gen_cifar100.h5")
