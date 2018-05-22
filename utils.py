@@ -36,15 +36,7 @@ def init_train():
     return res_dir, results.model, results.dataset, results.colorspace, results.batch_size, results.data_limit
 
 def create_models(model, size, learning_rate, momentum, lambda1, lambda2):
-    if (model == "model_max_pool") :
-        model_gen, model_dis, model_gan = model_max_pool.create_models(
-            input_shape_gen = (size, size, 4),
-            input_shape_dis = (size, size, 3),
-            output_channels=2,
-            lr=learning_rate,
-            momentum=momentum,
-            loss_weights=[lambda1, lambda2])
-    elif (model == "model_simple"):
+    if (model == "model_simple"):
         model_gen, model_dis, model_gan = model_simple.create_models(
             input_shape_gen = (size, size, 4),
             input_shape_dis = (size, size, 3),

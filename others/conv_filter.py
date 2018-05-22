@@ -4,12 +4,8 @@ import dataset
 from skimage import color
 import matplotlib.pyplot as plt
 
-# Create a dummy input image.
-
 images, _ = dataset.load_stl10_test_data()
-# images = dataset.preproc_cifar(images)
 
-# for i in range(0, 1000):
 image1 = images[0]
 image2 = images[7]
 image3 = images[74]
