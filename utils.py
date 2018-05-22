@@ -35,71 +35,71 @@ def init_train():
     os.makedirs(res_dir) 
     return res_dir, results.model, results.dataset, results.colorspace, results.batch_size, results.data_limit
 
-def create_models(MODEL, size, LEARNING_RATE, MOMENTUM, LAMBDA1, LAMBDA2):
-    if (MODEL == "model_max_pool") :
+def create_models(model, size, learning_rate, momentum, lambda1, lambda2):
+    if (model == "model_max_pool") :
         model_gen, model_dis, model_gan = model_max_pool.create_models(
-        input_shape_gen = (size, size, 4),
-        input_shape_dis = (size, size, 3),
-        output_channels=2,
-        lr=LEARNING_RATE,
-        momentum=MOMENTUM,
-        loss_weights=[LAMBDA1, LAMBDA2])
-    elif (MODEL == "model_simple"):
+            input_shape_gen = (size, size, 4),
+            input_shape_dis = (size, size, 3),
+            output_channels=2,
+            lr=learning_rate,
+            momentum=momentum,
+            loss_weights=[lambda1, lambda2])
+    elif (model == "model_simple"):
         model_gen, model_dis, model_gan = model_simple.create_models(
             input_shape_gen = (size, size, 4),
             input_shape_dis = (size, size, 3),
             output_channels=2,
-            lr=LEARNING_RATE,
-            momentum=MOMENTUM,
-            loss_weights=[LAMBDA1, LAMBDA2])
-    elif (MODEL == "model_transp"):
+            lr=learning_rate,
+            momentum=momentum,
+            loss_weights=[lambda1, lambda2])
+    elif (model == "model_transp"):
         model_gen, model_dis, model_gan = model_transp.create_models(
             input_shape_gen = (size, size, 4),
             input_shape_dis = (size, size, 3),
             output_channels=2,
-            lr=LEARNING_RATE,
-            momentum=MOMENTUM,
-            loss_weights=[LAMBDA1, LAMBDA2])
-    elif (MODEL == "model_no_down"):
+            lr=learning_rate,
+            momentum=momentum,
+            loss_weights=[lambda1, lambda2])
+    elif (model == "model_no_down"):
         model_gen, model_dis, model_gan = model_no_down.create_models(
             input_shape_gen = (size, size, 4),
             input_shape_dis = (size, size, 3),
             output_channels=2,
-            lr=LEARNING_RATE,
-            momentum=MOMENTUM,
-            loss_weights=[LAMBDA1, LAMBDA2])
-    elif (MODEL == "model_pool_max"):
+            lr=learning_rate,
+            momentum=momentum,
+            loss_weights=[lambda1, lambda2])
+    elif (model == "model_pool_max"):
         model_gen, model_dis, model_gan = model_pool_max.create_models(
             input_shape_gen = (size, size, 4),
             input_shape_dis = (size, size, 3),
             output_channels=2,
-            lr=LEARNING_RATE,
-            momentum=MOMENTUM,
-            loss_weights=[LAMBDA1, LAMBDA2])
-    elif (MODEL == "model_pool_avg"):
+            lr=learning_rate,
+            momentum=momentum,
+            loss_weights=[lambda1, lambda2])
+    elif (model == "model_pool_avg"):
         model_gen, model_dis, model_gan = model_pool_avg.create_models(
             input_shape_gen = (size, size, 4),
             input_shape_dis = (size, size, 3),
             output_channels=2,
-            lr=LEARNING_RATE,
-            momentum=MOMENTUM,
-            loss_weights=[LAMBDA1, LAMBDA2])
-    elif (MODEL == "model_transp_lsgan"):
+            lr=learning_rate,
+            momentum=momentum,
+            loss_weights=[lambda1, lambda2])
+    elif (model == "model_transp_lsgan"):
         model_gen, model_dis, model_gan = model_transp_lsgan.create_models(
             input_shape_gen = (size, size, 4),
             input_shape_dis = (size, size, 3),
             output_channels=2,
-            lr=LEARNING_RATE,
-            momentum=MOMENTUM,
-            loss_weights=[LAMBDA1, LAMBDA2])
-    elif (MODEL == "model_pool_avg_transp"):
+            lr=learning_rate,
+            momentum=momentum,
+            loss_weights=[lambda1, lambda2])
+    elif (model == "model_pool_avg_transp"):
         model_gen, model_dis, model_gan = model_pool_avg_transp.create_models(
             input_shape_gen = (size, size, 4),
             input_shape_dis = (size, size, 3),
             output_channels=2,
-            lr=LEARNING_RATE,
-            momentum=MOMENTUM,
-            loss_weights=[LAMBDA1, LAMBDA2])
+            lr=learning_rate,
+            momentum=momentum,
+            loss_weights=[lambda1, lambda2])
     return model_gen, model_dis, model_gan
     
 def add_noise(images):
@@ -110,16 +110,16 @@ def add_noise(images):
         images_noise.append(image_noise)
     return np.array(images_noise)
 
-def process_after_predicted(uv_pred, y, mean, colorspace):
-    yuv_pred = np.r_[(y.T, uv_pred.T[:1], uv_pred.T[1:])].T
-    yuv_pred[:, :, 0] += mean[0]
-    yuv_pred[:, :, 1] += mean[1]
-    yuv_pred[:, :, 2] += mean[2]
+def process_after_predicted(color_pred, grey, mean, colorspace):
+    image_pred = np.r_[(grey.T, color_pred.T[:1], color_pred.T[1:])].T
+    image_pred[:, :, 0] += mean[0]
+    image_pred[:, :, 1] += mean[1]
+    image_pred[:, :, 2] += mean[2]
     if colorspace == "YUV":
-        yuv_pred *= 255
-        return np.clip(np.abs(color.yuv2rgb(yuv_pred)), 0, 255).astype(np.uint8)
+        image_pred *= 255
+        return np.clip(np.abs(color.yuv2rgb(image_pred)), 0, 255).astype(np.uint8)
     elif colorspace == "LAB":
-        data = yuv_pred * 100
+        data = image_pred * 100
         data = np.clip(np.abs(color.lab2rgb(data)), 0, 1)
         data *= 255
         data = data.astype(np.uint8)
