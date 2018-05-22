@@ -1,8 +1,5 @@
 import keras
 import numpy as np
-import dataset
-import utils
-import tensorflow as tf
 import paths
 from keras.models import load_model
 
